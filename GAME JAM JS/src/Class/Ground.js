@@ -6,15 +6,15 @@ export class Ground extends GameEntity {
         super(0, canvasHeight - height, canvasWidth, height);
         this.speed = 2;
     }
-    // Le sol est positionné en bas de l'écran
 
-    update() {
-        this.x -= this.speed;
+    update(gameSpeed) {
+        this.x -= this.speed * gameSpeed;
         if (this.x <= -this.width) {
             this.x = 0;
         }
+
+        // Alterne entre deux rectangles : quand le premier sort de l’écran, le second apparaît
     }
-    //quand le sol a glissé de toute sa largeur on recommence
 
     draw(ctx) {
         ctx.fillStyle = "#e1c699";
