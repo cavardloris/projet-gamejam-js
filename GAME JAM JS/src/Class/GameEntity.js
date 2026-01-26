@@ -1,7 +1,8 @@
-export class GameEntity {
-  constructor(X, Y, width, height) {
-    this.X = X;
-    this.Y = Y;
+export class GameEntity
+{
+  constructor(x, y, width, height) {
+    this.x = x;
+    this.y = y;
     this.width = width;
     this.height = height;
   }
