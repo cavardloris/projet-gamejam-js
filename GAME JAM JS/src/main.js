@@ -3,6 +3,8 @@ import { Ground } from "./Class/Ground.js";
 import { Pipe } from "./Class/Pipe.js";
 import { Duck } from "./Class/Duck.js";
 
+let gameSpeed = 1;
+let frameCount = 0;
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 document.querySelector("#app").appendChild(canvas);
@@ -13,7 +15,6 @@ canvas.height = 600;
 const ground = new Ground(canvas.width, canvas.height);
 const duck = new Duck(50, 200);
 let pipes = [];
-let frameCount = 0;
 
 function handleJump(e) {
   if (e.code === "Space" || e.type === "click") {
@@ -32,10 +33,12 @@ function gameLoop() {
     const randomGapY =
       Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
     pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
+
+    frameCount = 0;
   }
 
   pipes = pipes.filter((pipe) => {
-    pipe.update();
+    pipe.update(gameSpeed);
     pipe.draw(ctx);
     return !pipe.isOffScreen();
   });
