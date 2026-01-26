@@ -6,6 +6,8 @@ import { Duck } from "./Class/Duck.js";
 let gameSpeed = 1;
 let frameCount = 0;
 let speedIncreaseTimer = 0;
+let pipeSpawnDistance = 0; // Distance parcourue depuis le dernier tuyau
+const PIPE_SPAWN_INTERVAL = 240; // Distance fixe entre les tuyaux
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
@@ -29,15 +31,16 @@ window.addEventListener("click", handleJump);
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Génération des tuyaux
-  if (frameCount % 120 === 0) {
+  pipeSpawnDistance += 2 * gameSpeed; // 2 est la vitesse de base des tuyaux
+
+  if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
     const minGapY = 50;
     const maxGapY = canvas.height - 200;
     const randomGapY =
         Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
     pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
 
-    frameCount = 0;
+    pipeSpawnDistance = 0; // Réinitialise le compteur de distance
   }
 
   // Mise à jour et dessin des tuyaux
@@ -57,8 +60,8 @@ function gameLoop() {
 
   // Augmentation progressive de la vitesse
   speedIncreaseTimer++;
-  if (speedIncreaseTimer % 600 === 0) { // Toutes les 10 secondes à 60 FPS
-    gameSpeed = Math.min(gameSpeed + 0.1, 3); // Max à 3x la vitesse initiale
+  if (speedIncreaseTimer % 600 === 0) {
+    gameSpeed = Math.min(gameSpeed + 0.1, 3);
     console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
   }
 
