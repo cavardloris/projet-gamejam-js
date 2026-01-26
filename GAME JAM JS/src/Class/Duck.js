@@ -7,7 +7,7 @@ export class Duck extends GameEntity {
 
     this.velocity = 0;
     this.gravity = 0.25;
-    this.jumpStrength = 4.5;
+    this.jumpStrength = 5.5;
 
     // creation de l'image du canard
     this.image = new Image();
