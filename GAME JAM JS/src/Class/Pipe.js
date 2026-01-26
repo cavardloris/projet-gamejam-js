@@ -9,9 +9,11 @@ export class Pipe extends GameEntity {
         this.passed = false;
     }
 
-    update() {
-        this.x -= this.speed;
+    update(gameSpeed) {
+        this.x -= this.speed * gameSpeed;
     }
+
+    //met à jour le gamespeed
 
     draw(ctx) {
         ctx.fillStyle = "#2ecc71";
