@@ -19,14 +19,19 @@ canvas.height = 600;
 
 let GameOn = true;
 
+const GAP_SIZE = 150;
+
 const ground = new Ground(canvas.width, canvas.height);
 const manabar = new ManaBar();
 const duck = new Duck(50, 200);
 let pipes = [];
 
-function handleJump(e) {
-  if (e.code === "Space" || e.type === "click") {
-    duck.jump();
+function handleJump(event) {
+  if (!GameOn) {
+  } else {
+    if (event.code === "Space" || event.type === "click") {
+      duck.jump();
+    }
   }
 }
 window.addEventListener("keydown", handleJump);
@@ -45,7 +50,7 @@ function gameLoop() {
     const minGapY = 50;
     const maxGapY = canvas.height - 200;
     const randomGapY =
-        Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
+      Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
     pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
 
     pipeSpawnDistance = 0; // Réinitialise le compteur de distance
