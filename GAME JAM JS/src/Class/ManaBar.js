@@ -1,6 +1,6 @@
 export class ManaBar {
   constructor(maxValues = 100) {
-    this.currentValue;
+    this.currentValue = maxValues;
     this.maxValue = maxValues;
     this.containerName = "app";
 
@@ -30,8 +30,21 @@ export class ManaBar {
 
   setValue(newValue) {
     this.currentValue = Math.max(0, Math.min(newValue, this.maxValue));
-
     const percentage = (this.currentValue / this.maxValue) * 100;
-    this.barFill.style.width = percentage + "%";
+    const emptyPercent = 100 - percentage;
+    this.barFill.style.width = emptyPercent + "%";
+  }
+
+  update() {
+    let updateValue = this.currentValue - 0.05;
+
+    if (updateValue < 0) {
+      return console.error("Mana épuisé !");
+    }
+    if (updateValue > this.maxValue) {
+      return console.error("Erreur : Mana trop élevé");
+    }
+
+    this.setValue(updateValue);
   }
 }

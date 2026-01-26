@@ -1,6 +1,7 @@
 import "./style.css";
 import { Ground } from "./Class/Ground.js";
 import { Pipe } from "./Class/Pipe.js";
+import { ManaBar } from "./Class/ManaBar.js";
 import { Duck } from "./Class/Duck.js";
 
 let gameSpeed = 1;
@@ -16,7 +17,10 @@ document.querySelector("#app").appendChild(canvas);
 canvas.width = 400;
 canvas.height = 600;
 
+let GameOn = true;
+
 const ground = new Ground(canvas.width, canvas.height);
+const manabar = new ManaBar();
 const duck = new Duck(50, 200);
 let pipes = [];
 
@@ -29,6 +33,10 @@ window.addEventListener("keydown", handleJump);
 window.addEventListener("click", handleJump);
 
 function gameLoop() {
+  if (GameOn === false) {
+    return;
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   pipeSpawnDistance += 2 * gameSpeed; // 2 est la vitesse de base des tuyaux
@@ -50,6 +58,11 @@ function gameLoop() {
     return !pipe.isOffScreen();
   });
 
+  ctx.fillStyle = "red";
+  ctx.font = "20px Arial";
+  ctx.fillText("Compteur : " + frameCount, 10, 30);
+
+  manabar.update();
   // Mise à jour et dessin du canard
   duck.update();
   duck.draw(ctx);
@@ -70,3 +83,8 @@ function gameLoop() {
 }
 
 gameLoop();
+
+document.addEventListener("click", () => {
+  GameOn = false;
+  console.log("Jeu arrêté au clic !");
+});
