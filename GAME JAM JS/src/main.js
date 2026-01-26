@@ -1,6 +1,7 @@
 import "./style.css";
 import { Ground } from "./Class/Ground.js";
 import { Pipe } from "./Class/Pipe.js";
+import { ManaBar } from "./Class/ManaBar.js";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
@@ -9,11 +10,18 @@ document.querySelector("#app").appendChild(canvas);
 canvas.width = 400;
 canvas.height = 600;
 
+let GameOn = true;
+
 const ground = new Ground(canvas.width, canvas.height);
+const manabar = new ManaBar();
 let pipes = [];
 let frameCount = 0;
 
 function gameLoop() {
+  if (GameOn === false) {
+    return;
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ground.update();
@@ -33,8 +41,18 @@ function gameLoop() {
     return !pipe.isOffScreen();
   });
 
+  ctx.fillStyle = "red";
+  ctx.font = "20px Arial";
+  ctx.fillText("Compteur : " + frameCount, 10, 30);
+
+  manabar.update();
   frameCount++;
   requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
+
+document.addEventListener("click", () => {
+  GameOn = false;
+  console.log("Jeu arrêté au clic !");
+});
