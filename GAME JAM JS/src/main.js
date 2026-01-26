@@ -15,19 +15,16 @@ const duck = new Duck(50, 200);
 let pipes = [];
 let frameCount = 0;
 
-function handleJump(event) {
-  if (event.code === "Space") {
+function handleJump(e) {
+  if (e.code === "Space" || e.type === "click") {
     duck.jump();
   }
 }
-
 window.addEventListener("keydown", handleJump);
+window.addEventListener("click", handleJump);
 
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ground.update();
-  ground.draw(ctx);
 
   if (frameCount % 120 === 0) {
     const minGapY = 50;
@@ -45,6 +42,8 @@ function gameLoop() {
 
   duck.update();
   duck.draw(ctx);
+  ground.update();
+  ground.draw(ctx);
 
   frameCount++;
   requestAnimationFrame(gameLoop);
