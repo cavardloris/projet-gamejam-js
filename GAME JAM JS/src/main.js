@@ -1,6 +1,7 @@
 import "./style.css";
 import { Ground } from "./Class/Ground.js";
 import { Pipe } from "./Class/Pipe.js";
+import { Duck } from "./Class/Duck.js";
 
 let gameSpeed = 1;
 let frameCount = 0;
@@ -12,21 +13,25 @@ canvas.width = 400;
 canvas.height = 600;
 
 const ground = new Ground(canvas.width, canvas.height);
+const duck = new Duck(50, 200);
 let pipes = [];
+
+function handleJump(e) {
+  if (e.code === "Space" || e.type === "click") {
+    duck.jump();
+  }
+}
+window.addEventListener("keydown", handleJump);
+window.addEventListener("click", handleJump);
 
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  gameSpeed += 0.0005;
-
-  ground.update(gameSpeed);
-  ground.draw(ctx);
-
-  if (frameCount >= 120 / gameSpeed) {
-    const minGapY = 100;
-    const maxGapY = canvas.height - 250;
-    const randomGapY = Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
-
+  if (frameCount % 120 === 0) {
+    const minGapY = 50;
+    const maxGapY = canvas.height - 200;
+    const randomGapY =
+      Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
     pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
 
     frameCount = 0;
@@ -37,6 +42,11 @@ function gameLoop() {
     pipe.draw(ctx);
     return !pipe.isOffScreen();
   });
+
+  duck.update();
+  duck.draw(ctx);
+  ground.update();
+  ground.draw(ctx);
 
   frameCount++;
   requestAnimationFrame(gameLoop);
