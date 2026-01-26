@@ -1,4 +1,5 @@
-export class GameEntity {
+export class GameEntity
+{
   constructor(x, y, width, height) {
     this.x = x;
     this.y = y;
