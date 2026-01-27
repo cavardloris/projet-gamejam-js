@@ -26,7 +26,6 @@ export class Ground extends GameEntity {
 
   collideWith(other) {
     if (this.ground.isColliding(other)) {
-      console.log("Collide with ground");
     }
     return this.ground.isColliding(other);
   }

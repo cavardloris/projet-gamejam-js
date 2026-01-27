@@ -163,6 +163,10 @@ function gameLoop() {
     return !pipe.isOffScreen();
   });
 
+  if (ground.collideWith(duck)) {
+    currentState = state.gameOver;
+  }
+
   ctx.fillStyle = "red";
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
