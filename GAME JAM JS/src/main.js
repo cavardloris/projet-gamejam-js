@@ -41,11 +41,24 @@ const sky = new Sky(canvas.width, canvas.height);
 let pipes = [];
 let lastJumpTime = 0;
 
+const rules = document.getElementById("rules");
+const closeBtn = document.getElementById("close-btn");
+
+// Récupération du nom du joueur
+let playerName = localStorage.getItem("playerName");
+if (!playerName) {
+  playerName = prompt("Entrez votre pseudo :") || "Mets toi un pseudo";
+  localStorage.setItem("playerName", playerName);
+}
+
+closeBtn.addEventListener("click", () => {
+  rules.classList.add("hidden");
+});
 // Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
 function handleInput(event) {
   //Partie pause du jeu avec la touche P et reprise du jeu avec espace ou p
-  if (event.code === "KeyP") {
+  if (event.key === "Escape") {
     if (currentState === state.playing) {
       currentState = state.paused;
     } else if (currentState === state.paused) {
@@ -53,11 +66,10 @@ function handleInput(event) {
     }
     return;
   }
-  if (event.key === "Escape" && currentState === state.paused) {
-    currentState = state.playing;
-    return;
-  }
-  if (event.code === "Space" || event.type === "click") {
+  if (
+    rules.classList.contains("hidden") &&
+    (event.code === "Space" || event.type === "click")
+  ) {
     switch (currentState) {
       case state.start:
         currentState = state.playing;
@@ -130,14 +142,14 @@ function gameLoop() {
 }
 function drawStartScreen() {
   ground.draw(ctx);
-  duck.draw(ctx);
-  ctx.fillStyle = "red";
+  // duck.draw(ctx);
+  ctx.fillStyle = "green";
   ctx.font = "30px Arial";
   ctx.textAlign = "center";
   ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
   ctx.font = "20px Arial";
   ctx.fillText(
-    "Appuyez sur Espace pour commencer",
+    "Appuyez sur Espace ou clic pour commencer",
     canvas.width / 2,
     canvas.height / 2,
   );
@@ -146,7 +158,13 @@ function drawStartScreen() {
     canvas.width / 2,
     canvas.height / 2 + 100,
   );
+  ctx.fillText(
+    "Meilleur score : " + localStorage.getItem("bestScore"),
+    canvas.width / 2,
+    canvas.height / 2 + 150,
+  );
 }
+
 function updatePlayingState() {
   manabar.update(duck.isFalling());
   frameCount++;
@@ -230,7 +248,17 @@ function GameOverScreen() {
     canvas.width / 2,
     canvas.height / 2 + 60,
   );
+  datastorage(frameCount);
+}
+
+function datastorage(frameCount) {
   localStorage.setItem("lastScore", frameCount);
+  if (
+    localStorage.getItem("bestScore") === null ||
+    frameCount > parseInt(localStorage.getItem("bestScore"))
+  ) {
+    localStorage.setItem("bestScore", frameCount);
+  }
 }
 
 function resetGame() {
