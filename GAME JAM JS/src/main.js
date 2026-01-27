@@ -3,12 +3,19 @@ import { Ground } from "./Class/Ground.js";
 import { Pipe } from "./Class/Pipe.js";
 import { ManaBar } from "./Class/ManaBar.js";
 import { Duck } from "./Class/Duck.js";
+import { AudioManager } from "./Class/AudioManager.js";
+
+const audioManager = new AudioManager();
+
+audioManager.loadSound('music', 'src/assets/sounds/music_fixed.mp3');
+audioManager.loadSound('jump', 'src/assets/sounds/jump.mp3');
 
 let gameSpeed = 1;
+let gameStarted = false;
 let frameCount = 0;
 let speedIncreaseTimer = 0;
-let pipeSpawnDistance = 0; // Distance parcourue depuis le dernier tuyau
-const PIPE_SPAWN_INTERVAL = 240; // Distance fixe entre les tuyaux
+let pipeSpawnDistance = 0;
+const PIPE_SPAWN_INTERVAL = 240;
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
@@ -19,41 +26,49 @@ canvas.height = 600;
 
 let GameOn = true;
 
-const GAP_SIZE = 150;
-
 const ground = new Ground(canvas.width, canvas.height);
 const manabar = new ManaBar();
 const duck = new Duck(50, 200);
 let pipes = [];
 
-function handleJump(event) {
-  if (!GameOn) {
-  } else {
-    if (event.code === "Space" || event.type === "click") {
+function handleInput(e) {
+  if (!GameOn) return;
+
+  if (e.code === "Space" || e.type === "mousedown") {
+
+    if (!gameStarted) {
+      audioManager.playLoop('music', 0.3);
+      gameStarted = true;
+      console.log("Musique de fond démarrée !");
+    }
+
+    if (duck.jump) {
       duck.jump();
+      audioManager.play('jump', 0.5); // Jouer le son de saut
     }
   }
 }
-window.addEventListener("keydown", handleJump);
-window.addEventListener("click", handleJump);
+
+window.addEventListener("keydown", handleInput);
+window.addEventListener("mousedown", handleInput);
+
 
 function gameLoop() {
-  if (GameOn === false) {
-    return;
-  }
+  if (GameOn === false) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  pipeSpawnDistance += 2 * gameSpeed; // 2 est la vitesse de base des tuyaux
 
-  if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
-    const minGapY = 50;
-    const maxGapY = canvas.height - 200;
-    const randomGapY =
-      Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
-    pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
+  if (gameStarted) {
+    pipeSpawnDistance += 2 * gameSpeed;
 
-    pipeSpawnDistance = 0; // Réinitialise le compteur de distance
+    if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
+      const minGapY = 50;
+      const maxGapY = canvas.height - 200;
+      const randomGapY = Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
+      pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
+      pipeSpawnDistance = 0;
+    }
   }
 
   // Mise à jour et dessin des tuyaux
@@ -63,17 +78,17 @@ function gameLoop() {
 
     if (pipe.doesCollideWith(duck)) {
       console.log(duck, pipe.topPipe.getBounds(), pipe.bottomPipe.getBounds());
-      GameOn = false; // <--- On éteint le jeu
+      GameOn = false;
     }
     return !pipe.isOffScreen();
   });
 
+
   ctx.fillStyle = "red";
   ctx.font = "20px Arial";
-  ctx.fillText("Compteur : " + frameCount, 10, 30);
+  ctx.fillText("Score : " + frameCount, 10, 30);
 
   manabar.update();
-  // Mise à jour et dessin du canard
   duck.update();
   duck.draw(ctx);
 
@@ -84,20 +99,16 @@ function gameLoop() {
   ground.update(gameSpeed);
   ground.draw(ctx);
 
-  // Augmentation progressive de la vitesse
-  speedIncreaseTimer++;
-  if (speedIncreaseTimer % 600 === 0) {
-    gameSpeed = Math.min(gameSpeed + 0.1, 3);
-    console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
+  if (gameStarted) {
+    speedIncreaseTimer++;
+    if (speedIncreaseTimer % 600 === 0) {
+      gameSpeed = Math.min(gameSpeed + 0.1, 3);
+      console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
+    }
+    frameCount++;
   }
 
-  frameCount++;
   requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
-
-document.addEventListener("click", () => {
-  GameOn = false;
-  console.log("Jeu arrêté au clic !");
-});
