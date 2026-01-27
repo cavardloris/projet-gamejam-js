@@ -4,6 +4,7 @@ import { Pipe } from "./Class/Pipe.js";
 import { ManaBar } from "./Class/ManaBar.js";
 import { Duck } from "./Class/Duck.js";
 import { AudioManager } from "./Class/AudioManager.js";
+import { Sky } from "./Class/Sky.js";
 
 const audioManager = new AudioManager();
 
@@ -35,6 +36,7 @@ const state = {
 const ground = new Ground(canvas.width, canvas.height);
 const manabar = new ManaBar();
 const duck = new Duck(50, 200);
+const sky = new Sky(canvas.width, canvas.height);
 let pipes = [];
 let lastJumpTime = 0;
 
@@ -168,6 +170,10 @@ function gameLoop() {
   }
 
   if (ground.collideWith(duck)) {
+    currentState = state.gameOver;
+  }
+
+  if (sky.collidingWith(duck)) {
     currentState = state.gameOver;
   }
 
