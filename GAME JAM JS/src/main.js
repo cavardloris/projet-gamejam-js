@@ -50,6 +50,10 @@ if (!playerName) {
   playerName = prompt("Entrez votre pseudo :") || "Mets toi un pseudo";
   localStorage.setItem("playerName", playerName);
 }
+const pseudoDisplay = document.getElementById("player-pseudo");
+if (pseudoDisplay) {
+  pseudoDisplay.textContent = playerName;
+}
 
 closeBtn.addEventListener("click", () => {
   rules.classList.add("hidden");
