@@ -27,11 +27,11 @@ export class Duck extends GameEntity {
     if (this.image.complete && this.image.naturalWidth > 0) {
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-      // --- DEBUG : AFFICHER LA HITBOX ---
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(this.x, this.y, this.width, this.height);
-      // ----------------------------------
+      //   // --- DEBUG : AFFICHER LA HITBOX ---
+      //   ctx.strokeStyle = "red";
+      //   ctx.lineWidth = 2;
+      //   ctx.strokeRect(this.x, this.y, this.width, this.height);
+      //   // ----------------------------------
     } else {
       super.draw(ctx);
     }

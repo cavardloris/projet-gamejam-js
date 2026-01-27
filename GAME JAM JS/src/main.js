@@ -157,8 +157,7 @@ function gameLoop() {
     pipe.draw(ctx);
 
     if (pipe.doesCollideWith(duck)) {
-      console.log(duck, pipe.topPipe.getBounds(), pipe.bottomPipe.getBounds());
-      GameOn = false;
+      currentState = state.gameOver;
     }
     return !pipe.isOffScreen();
   });
