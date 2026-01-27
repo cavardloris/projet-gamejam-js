@@ -11,6 +11,7 @@ export class GameEntity {
   }
 
   getBounds() {
+    const p = this.padding || 0;
     return {
       startX: this.x,
       startY: this.y,
