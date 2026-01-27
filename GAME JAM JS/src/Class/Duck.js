@@ -3,7 +3,7 @@ import duckSprite from "../assets/flappyDuck.png";
 
 export class Duck extends GameEntity {
   constructor(x, y) {
-    super(x, y, 280, 135);
+    super(x, y, 60, 47);
 
     this.velocity = 0;
     this.gravity = 0.25;
@@ -26,8 +26,13 @@ export class Duck extends GameEntity {
   draw(ctx) {
     if (this.image.complete && this.image.naturalWidth > 0) {
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+      // --- DEBUG : AFFICHER LA HITBOX ---
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(this.x, this.y, this.width, this.height);
+      // ----------------------------------
     } else {
-      // Si l'image est cassée ou charge encore, on dessine le carré de secours
       super.draw(ctx);
     }
   }

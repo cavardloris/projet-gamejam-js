@@ -3,8 +3,14 @@ import { Ground } from "./Class/Ground.js";
 import { Pipe } from "./Class/Pipe.js";
 import { ManaBar } from "./Class/ManaBar.js";
 import { Duck } from "./Class/Duck.js";
+import { AudioManager } from "./Class/AudioManager.js";
+
+const audioManager = new AudioManager();
+
+audioManager.loadSound('music', 'src/assets/sounds/music_fixed.mp3');
 
 let gameSpeed = 1;
+let gameStarted = false;
 let frameCount = 0;
 let speedIncreaseTimer = 0;
 let pipeSpawnDistance = 0; // Distance parcourue depuis le dernier tuyau
@@ -70,10 +76,25 @@ function handleJump(event) {
         currentState = state.playing;
         break;
     }
+
+function handleInput(e) {
+  if (!GameOn) return;
+
+  if (e.code === "Space" || e.type === "mousedown") {
+    // Démarrer la musique au premier saut
+    if (!gameStarted) {
+      audioManager.playLoop('music', 0.3);
+      gameStarted = true;
+      console.log("Musique de fond démarrée !");
+    }
+
+    if (duck.jump) duck.jump();
   }
 }
-window.addEventListener("keydown", handleJump);
-window.addEventListener("click", handleJump);
+
+window.addEventListener("keydown", handleInput);
+window.addEventListener("mousedown", handleInput);
+
 
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // Nettoyage du canvas
@@ -124,9 +145,10 @@ function gameLoop() {
 
   // Mise à jour et dessin des tuyaux
 
+
   ctx.fillStyle = "red";
   ctx.font = "20px Arial";
-  ctx.fillText("Compteur : " + frameCount, 10, 30);
+  ctx.fillText("Score : " + frameCount, 10, 30);
 
   // manabar.update();
 
