@@ -167,17 +167,6 @@ function gameLoop() {
     });
   }
 
-  // Mise à jour et dessin des tuyaux
-  pipes = pipes.filter((pipe) => {
-    pipe.update(gameSpeed);
-    pipe.draw(ctx);
-
-    if (pipe.doesCollideWith(duck)) {
-      currentState = state.gameOver;
-    }
-    return !pipe.isOffScreen();
-  });
-
   if (ground.collideWith(duck)) {
     currentState = state.gameOver;
   }
