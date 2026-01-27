@@ -133,6 +133,14 @@ function gameLoop() {
     ground.update(gameSpeed);
     ground.draw(ctx);
 
+    // Augmentation progressive de la vitesse
+    speedIncreaseTimer++;
+
+    if (speedIncreaseTimer % 600 === 0) {
+      gameSpeed = Math.min(gameSpeed + 0.1, 3);
+      console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
+    }
+
     pipeSpawnDistance += 2 * gameSpeed; // 2 est la vitesse de base des tuyaux
     if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
       const minGapY = 50;
@@ -169,14 +177,6 @@ function gameLoop() {
   ctx.fillText("Score : " + frameCount, 10, 30);
 
   // manabar.update();
-
-  // Augmentation progressive de la vitesse
-  speedIncreaseTimer++;
-
-  if (speedIncreaseTimer % 600 === 0) {
-    gameSpeed = Math.min(gameSpeed + 0.1, 3);
-    console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
-  }
 
   if (currentState === state.paused) {
     pipes.forEach((pipe) => pipe.draw(ctx));
