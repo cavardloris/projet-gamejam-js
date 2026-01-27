@@ -92,6 +92,10 @@ function gameLoop() {
   duck.update();
   duck.draw(ctx);
 
+  // Mise à jour et dessin du sol
+  if (ground.collideWith(duck)) {
+    GameOn = false;
+  }
   ground.update(gameSpeed);
   ground.draw(ctx);
 
