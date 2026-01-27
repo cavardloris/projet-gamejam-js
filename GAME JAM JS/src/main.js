@@ -8,6 +8,7 @@ import { AudioManager } from "./Class/AudioManager.js";
 const audioManager = new AudioManager();
 
 audioManager.loadSound('music', 'src/assets/sounds/music_fixed.mp3');
+audioManager.loadSound('jump', 'src/assets/sounds/jump.mp3');
 
 let gameSpeed = 1;
 let gameStarted = false;
@@ -34,14 +35,17 @@ function handleInput(e) {
   if (!GameOn) return;
 
   if (e.code === "Space" || e.type === "mousedown") {
-    // Démarrer la musique au premier saut
+
     if (!gameStarted) {
       audioManager.playLoop('music', 0.3);
       gameStarted = true;
       console.log("Musique de fond démarrée !");
     }
 
-    if (duck.jump) duck.jump();
+    if (duck.jump) {
+      duck.jump();
+      audioManager.play('jump', 0.5); // Jouer le son de saut
+    }
   }
 }
 
@@ -74,7 +78,7 @@ function gameLoop() {
 
     if (pipe.doesCollideWith(duck)) {
       console.log(duck, pipe.topPipe.getBounds(), pipe.bottomPipe.getBounds());
-      GameOn = false; // <--- On éteint le jeu
+      GameOn = false;
     }
     return !pipe.isOffScreen();
   });
