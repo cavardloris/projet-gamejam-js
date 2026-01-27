@@ -36,4 +36,12 @@ export class Duck extends GameEntity {
       super.draw(ctx);
     }
   }
+
+  isFalling() {
+    if (this.velocity > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

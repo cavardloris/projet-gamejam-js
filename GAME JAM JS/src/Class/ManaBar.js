@@ -9,7 +9,7 @@ export class ManaBar {
 
   createBarElement() {
     const container = document.getElementById(this.containerName);
-    if (container == false)
+    if (!container)
       return console.error(`Conteneur #${this.containerName} introuvable !`);
     // S'occupe de créer une div pour mettre la bar
     this.barContainer = document.createElement("div");
@@ -35,16 +35,28 @@ export class ManaBar {
     this.barFill.style.width = emptyPercent + "%";
   }
 
-  update() {
-    let updateValue = this.currentValue - 0.05;
+  getManaValue() {
+    return this.currentValue;
+  }
 
-    if (updateValue < 0) {
-      return console.error("Mana épuisé !");
-    }
-    if (updateValue > this.maxValue) {
-      return console.error("Erreur : Mana trop élevé");
-    }
+  //Fonction update qui s'occupe de la mana bar si elle doit diminuer ou augmenter
+  update(isFalling) {
+    if (isFalling) {
+      const regenSpeed = 0.4;
 
-    this.setValue(updateValue);
+      if (this.currentValue < this.maxValue) {
+        this.setValue(this.currentValue + regenSpeed);
+      }
+    } else {
+      const cost = 0.7;
+      let newValue = this.currentValue - cost;
+
+      if (newValue <= 0) {
+        console.error("Mana épuisé !");
+        newValue = 0;
+      }
+
+      this.setValue(newValue);
+    }
   }
 }
