@@ -7,7 +7,7 @@ export class Pipe extends GameEntity {
   constructor(canvasWidth, canvasHeight, gapY, gapHeight = 150) {
     super(canvasWidth, 0, 50, canvasHeight);
 
-    this.topPipe = new GameEntity(canvasWidth, 0, 50, gapHeight);
+    this.topPipe = new GameEntity(canvasWidth, 0, 50, gapY);
     this.bottomPipe = new GameEntity(
       canvasWidth,
       gapHeight + gapY,
