@@ -5,6 +5,7 @@ import { ManaBar } from "./Class/ManaBar.js";
 import { Duck } from "./Class/Duck.js";
 import { AudioManager } from "./Class/AudioManager.js";
 
+//Chargement des sons + creation audiomanager
 const audioManager = new AudioManager();
 
 audioManager.loadSound("music", "src/assets/sounds/music_fixed.mp3");
@@ -102,129 +103,132 @@ function checkaudio() {
 }
 
 function gameLoop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // Nettoyage du canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   checkaudio();
-  if (currentState === state.start) {
-    ground.draw(ctx); // Affichage du sol
-    duck.draw(ctx); // Affichage canard avant de démarrer
-    // * Rajouter tout les élements une fois push ou les enlever pour vraiment faire une présentation du jeu
-    // Présentation du jeu
-    ctx.fillStyle = "red";
-    ctx.font = "30px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
-    ctx.font = "20px Arial";
-    ctx.fillText(
-      "Appuyez sur Espace pour commencer",
-      canvas.width / 2,
-      canvas.height / 2,
-    );
-    ctx.fillText(
-      "Dernier score : " + localStorage.getItem("lastScore"),
-      canvas.width / 2,
-      canvas.height / 2 + 100,
-    );
-  } else if (currentState === state.playing) {
-    manabar.update(duck.isFalling());
-    // La mise à jour des points pour que ça augmente que quand on joue
-    frameCount++;
 
-    // Mise à jour et dessin du canard
-    duck.update();
-    duck.draw(ctx);
+  switch (currentState) {
+    case state.start:
+      drawStartScreen();
+      break;
 
-    // Mise à jour et dessin du sol
-    ground.update(gameSpeed);
-    ground.draw(ctx);
+    case state.playing:
+      updatePlayingState();
+      break;
 
-    // Augmentation progressive de la vitesse
-    speedIncreaseTimer++;
+    case state.paused:
+      PauseScreen();
+      break;
 
-    if (speedIncreaseTimer % 600 === 0) {
-      gameSpeed = Math.min(gameSpeed + 0.1, 3);
-      console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
-    }
-
-    pipeSpawnDistance += 2 * gameSpeed; // 2 est la vitesse de base des tuyaux
-    if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
-      const minGapY = 50;
-      const maxGapY = canvas.height - 200;
-      const randomGapY =
-        Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
-      pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
-
-      pipeSpawnDistance = 0; // Réinitialise le compteur de distance
-    }
-    pipes = pipes.filter((pipe) => {
-      pipe.update(gameSpeed);
-      pipe.draw(ctx);
-
-      if (pipe.doesCollideWith(duck)) {
-        console.log(
-          duck,
-          pipe.topPipe.getBounds(),
-          pipe.bottomPipe.getBounds(),
-        );
-        currentState = state.gameOver;
-      }
-      return !pipe.isOffScreen();
-    });
+    case state.gameOver:
+      GameOverScreen();
+      break;
   }
 
-  if (ground.collideWith(duck)) {
+  requestAnimationFrame(gameLoop);
+}
+function drawStartScreen() {
+  ground.draw(ctx);
+  duck.draw(ctx);
+  ctx.fillStyle = "red";
+  ctx.font = "30px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
+  ctx.font = "20px Arial";
+  ctx.fillText(
+    "Appuyez sur Espace pour commencer",
+    canvas.width / 2,
+    canvas.height / 2,
+  );
+  ctx.fillText(
+    "Dernier score : " + localStorage.getItem("lastScore"),
+    canvas.width / 2,
+    canvas.height / 2 + 100,
+  );
+}
+function updatePlayingState() {
+  manabar.update(duck.isFalling());
+  frameCount++;
+
+  duck.update();
+  duck.draw(ctx);
+
+  ground.update(gameSpeed);
+  ground.draw(ctx);
+
+  speedIncreaseTimer++;
+
+  if (speedIncreaseTimer % 600 === 0) {
+    gameSpeed = Math.min(gameSpeed + 0.1, 3);
+    console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
+  }
+
+  pipeSpawnDistance += 2 * gameSpeed;
+  if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
+    const minGapY = 50;
+    const maxGapY = canvas.height - 200;
+    const randomGapY =
+      Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
+    pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
+
+    pipeSpawnDistance = 0;
+  }
+  pipes = pipes.filter((pipe) => {
+    pipe.update(gameSpeed);
+    pipe.draw(ctx);
+
+    if (pipe.doesCollideWith(duck)) {
+      currentState = state.gameOver;
+    }
+    return !pipe.isOffScreen();
+  });
+
+  if (ground.collideWith(duck) || sky.collidingWith(duck)) {
     currentState = state.gameOver;
   }
-
   ctx.fillStyle = "red";
   ctx.font = "20px Arial";
   ctx.textAlign = "center";
   ctx.fillText("Score : " + frameCount, 10, 30);
+}
 
-  // manabar.update();
+function PauseScreen() {
+  pipes.forEach((pipe) => pipe.draw(ctx));
+  duck.draw(ctx);
+  ground.draw(ctx);
 
-  if (currentState === state.paused) {
-    pipes.forEach((pipe) => pipe.draw(ctx));
-    duck.draw(ctx);
-    ground.draw(ctx);
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "white";
-    ctx.font = "40px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
-  } else if (currentState === state.gameOver) {
-    pipes.forEach((pipe) => pipe.draw(ctx));
-    ground.draw(ctx);
-    duck.draw(ctx);
+  ctx.fillStyle = "white";
+  ctx.font = "40px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
+}
 
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+function GameOverScreen() {
+  pipes.forEach((pipe) => pipe.draw(ctx));
+  ground.draw(ctx);
+  duck.draw(ctx);
 
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.font = "40px Arial";
-    ctx.fillText("PERDU !", canvas.width / 2, canvas.height / 2 - 20);
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.font = "20px Arial";
-    ctx.fillText(
-      "Score final : " + frameCount,
-      canvas.width / 2,
-      canvas.height / 2 + 20,
-    );
-    ctx.fillText(
-      "Appuyez sur espace pour rejouer",
-      canvas.width / 2,
-      canvas.height / 2 + 60,
-    );
-    // ctx.fillText(
-    //   "Dernier score : " + localStorage.getItem("lastScore"),
-    //   canvas.width / 2,
-    //   canvas.height / 2 + 100,
-    // );
-    localStorage.setItem("lastScore", frameCount);
-  }
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.font = "20px Arial";
+  ctx.fillText("PERDU !", canvas.width / 2, canvas.height / 2 - 20);
 
-  requestAnimationFrame(gameLoop);
+  ctx.fillText(
+    "Score final : " + frameCount,
+    canvas.width / 2,
+    canvas.height / 2 + 20,
+  );
+  ctx.fillText(
+    "Appuyez sur espace pour rejouer",
+    canvas.width / 2,
+    canvas.height / 2 + 60,
+  );
+  localStorage.setItem("lastScore", frameCount);
 }
 
 function resetGame() {
