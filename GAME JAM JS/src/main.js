@@ -79,7 +79,6 @@ function gameLoop() {
 
   // Mise à jour et dessin du sol
   if (ground.collideWith(duck)) {
-    console.log(duck, ground.getBounds());
     GameOn = false;
   }
   ground.update(gameSpeed);
