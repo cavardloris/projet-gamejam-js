@@ -68,7 +68,7 @@ function handleInput(event) {
           if (currentTime - lastJumpTime >= 200) {
             manabar.update(false);
             lastJumpTime = currentTime;
-            audioManager.play("jump", 0.5);
+            audioManager.play("jump", 0.3);
           }
         }
         break;
