@@ -71,6 +71,11 @@ function gameLoop() {
   pipes = pipes.filter((pipe) => {
     pipe.update(gameSpeed);
     pipe.draw(ctx);
+
+    if (pipe.doesCollideWith(duck)) {
+      console.log(duck, pipe.topPipe.getBounds(), pipe.bottomPipe.getBounds());
+      GameOn = false; // <--- On éteint le jeu
+    }
     return !pipe.isOffScreen();
   });
 
