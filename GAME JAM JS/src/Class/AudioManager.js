@@ -25,17 +25,17 @@ export class AudioManager {
     playLoop(name, volume = 1) {
         if (this.muted || !this.sounds[name]) return;
 
-        const sound = this.sounds[name];
-
-        sound.pause();
-        sound.currentTime = 0;
+        const sound = this.sounds[name].cloneNode();
         sound.loop = true;
         sound.volume = volume;
 
         sound.play()
             .then(() => console.log("Musique lancée"))
             .catch(err => console.log("Erreur audio:", err));
+
+        this.sounds[name] = sound;
     }
+
 
     stop(name) {
         if (!this.sounds[name]) return;
@@ -45,10 +45,4 @@ export class AudioManager {
         sound.currentTime = 0;
     }
 
-    mute(value = true) {
-        this.muted = value;
-        Object.values(this.sounds).forEach(sound => {
-            sound.muted = value;
-        });
-    }
 }

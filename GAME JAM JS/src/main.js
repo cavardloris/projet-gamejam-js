@@ -7,7 +7,7 @@ import { AudioManager } from "./Class/AudioManager.js";
 
 const audioManager = new AudioManager();
 
-audioManager.loadSound('music', './assets/sounds/music_fixed.mp3');
+audioManager.loadSound('music', 'src/assets/sounds/music_fixed.mp3');
 
 let gameSpeed = 1;
 let gameStarted = false;
