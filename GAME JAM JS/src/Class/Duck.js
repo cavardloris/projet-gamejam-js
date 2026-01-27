@@ -4,7 +4,6 @@ import duckSprite from "../assets/flappyDuck.png";
 export class Duck extends GameEntity {
   constructor(x, y) {
     super(x, y, 60, 47);
-
     this.velocity = 0;
     this.gravity = 0.25;
     this.jumpStrength = 5.5;
@@ -35,6 +34,19 @@ export class Duck extends GameEntity {
     } else {
       super.draw(ctx);
     }
+  }
+
+  getBounds() {
+    // Changez ce chiffre pour rendre le canard plus ou moins "maigre"
+    const paddingleft = 11;
+    const paddingtop = 7;
+
+    return {
+      startX: this.x + paddingleft, // Bord gauche rentré
+      startY: this.y + paddingtop, // Bord haut rentré
+      endX: this.x + this.width, // Bord droit rentré
+      endY: this.y + this.height, // Bord bas rentré
+    };
   }
 
   isFalling() {
