@@ -16,7 +16,7 @@ let speedIncreaseTimer = 0;
 let pipeSpawnDistance = 0; // Distance parcourue depuis le dernier tuyau
 const PIPE_SPAWN_INTERVAL = 240; // Distance fixe entre les tuyaux
 let currentState = 0;
-let audio = 0; // 0 pour pas de musique, 1 musique de jeu, 2 musique de pause
+let audio = 0; // 0 pour pas de musique, 1 musique de jeu, 2 musique de pause, 3 musique de game over
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
@@ -68,6 +68,7 @@ function handleInput(event) {
           if (currentTime - lastJumpTime >= 200) {
             manabar.update(false);
             lastJumpTime = currentTime;
+            audioManager.play("jump", 0.5);
           }
         }
         break;
@@ -82,8 +83,6 @@ function handleInput(event) {
 
 window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
-
-// Dans src/main.js
 
 function checkaudio() {
   if (currentState === state.playing && audio !== 1) {
@@ -147,6 +146,15 @@ function gameLoop() {
     pipes = pipes.filter((pipe) => {
       pipe.update(gameSpeed);
       pipe.draw(ctx);
+
+      if (pipe.doesCollideWith(duck)) {
+        console.log(
+          duck,
+          pipe.topPipe.getBounds(),
+          pipe.bottomPipe.getBounds(),
+        );
+        currentState = state.gameOver;
+      }
       return !pipe.isOffScreen();
     });
   }
@@ -211,7 +219,7 @@ function gameLoop() {
       canvas.height / 2 + 20,
     );
     ctx.fillText(
-      "Appuyez pour rejouer",
+      "Appuyez sur espace pour rejouer",
       canvas.width / 2,
       canvas.height / 2 + 60,
     );
