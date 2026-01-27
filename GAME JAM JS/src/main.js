@@ -8,6 +8,7 @@ import { AudioManager } from "./Class/AudioManager.js";
 const audioManager = new AudioManager();
 
 audioManager.loadSound("music", "src/assets/sounds/music_fixed.mp3");
+audioManager.loadSound("jump", "src/assets/sounds/jump.mp3");
 
 let gameSpeed = 1;
 let frameCount = 0;
@@ -151,6 +152,16 @@ function gameLoop() {
   }
 
   // Mise à jour et dessin des tuyaux
+  pipes = pipes.filter((pipe) => {
+    pipe.update(gameSpeed);
+    pipe.draw(ctx);
+
+    if (pipe.doesCollideWith(duck)) {
+      console.log(duck, pipe.topPipe.getBounds(), pipe.bottomPipe.getBounds());
+      GameOn = false;
+    }
+    return !pipe.isOffScreen();
+  });
 
   ctx.fillStyle = "red";
   ctx.font = "20px Arial";
