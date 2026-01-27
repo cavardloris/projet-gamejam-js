@@ -48,7 +48,7 @@ export class ManaBar {
         this.setValue(this.currentValue + regenSpeed);
       }
     } else {
-      const cost = 0.7;
+      const cost = 0.3;
       let newValue = this.currentValue - cost;
 
       if (newValue <= 0) {

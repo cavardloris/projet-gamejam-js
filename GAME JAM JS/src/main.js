@@ -7,15 +7,15 @@ import { AudioManager } from "./Class/AudioManager.js";
 
 const audioManager = new AudioManager();
 
-audioManager.loadSound('music', 'src/assets/sounds/music_fixed.mp3');
+audioManager.loadSound("music", "src/assets/sounds/music_fixed.mp3");
 
 let gameSpeed = 1;
-let gameStarted = false;
 let frameCount = 0;
 let speedIncreaseTimer = 0;
 let pipeSpawnDistance = 0; // Distance parcourue depuis le dernier tuyau
 const PIPE_SPAWN_INTERVAL = 240; // Distance fixe entre les tuyaux
 let currentState = 0;
+let audio = 0; // 0 pour pas de musique, 1 musique de jeu, 2 musique de pause
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
@@ -37,9 +37,9 @@ const duck = new Duck(50, 200);
 let pipes = [];
 let lastJumpTime = 0;
 
-// Fonction handlejump qui permet de gérer le saut du canard et la diminution du mana
+// Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
-function handleJump(event) {
+function handleInput(event) {
   //Partie pause du jeu avec la touche P et reprise du jeu avec espace ou p
   if (event.code === "KeyP") {
     if (currentState === state.playing) {
@@ -76,34 +76,41 @@ function handleJump(event) {
         currentState = state.playing;
         break;
     }
-
-function handleInput(e) {
-  if (!GameOn) return;
-
-  if (e.code === "Space" || e.type === "mousedown") {
-    // Démarrer la musique au premier saut
-    if (!gameStarted) {
-      audioManager.playLoop('music', 0.3);
-      gameStarted = true;
-      console.log("Musique de fond démarrée !");
-    }
-
-    if (duck.jump) duck.jump();
   }
 }
 
 window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
 
+// Dans src/main.js
+
+function checkaudio() {
+  if (currentState === state.playing && audio !== 1) {
+    audioManager.playLoop("music", 0.3);
+    console.log("Musique de fond démarrée !");
+    audio = 1;
+  }
+
+  if (currentState === state.paused && audio !== 2) {
+    audioManager.stop("music");
+    console.log("Musique de fond de jeu stoppée !");
+    audio = 2;
+  }
+  if (currentState === state.gameOver && audio !== 3) {
+    audioManager.stop("music");
+    audio = 3;
+  }
+}
 
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // Nettoyage du canvas
+  checkaudio();
   if (currentState === state.start) {
     ground.draw(ctx); // Affichage du sol
     duck.draw(ctx); // Affichage canard avant de démarrer
     // * Rajouter tout les élements une fois push ou les enlever pour vraiment faire une présentation du jeu
     // Présentation du jeu
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "red";
     ctx.font = "30px Arial";
     ctx.textAlign = "center";
     ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
@@ -145,9 +152,9 @@ function gameLoop() {
 
   // Mise à jour et dessin des tuyaux
 
-
   ctx.fillStyle = "red";
   ctx.font = "20px Arial";
+  ctx.textAlign = "center";
   ctx.fillText("Score : " + frameCount, 10, 30);
 
   // manabar.update();
@@ -210,8 +217,3 @@ function resetGame() {
 }
 
 gameLoop();
-
-document.addEventListener("a", () => {
-  GameOn = false;
-  console.log("Jeu arrêté au clic !");
-});
