@@ -75,7 +75,6 @@ function handleInput(event) {
 
       case state.gameOver:
         resetGame();
-        currentState = state.playing;
         break;
     }
   }
@@ -119,6 +118,11 @@ function gameLoop() {
       "Appuyez sur Espace pour commencer",
       canvas.width / 2,
       canvas.height / 2,
+    );
+    ctx.fillText(
+      "Dernier score : " + localStorage.getItem("lastScore"),
+      canvas.width / 2,
+      canvas.height / 2 + 100,
     );
   } else if (currentState === state.playing) {
     manabar.update(duck.isFalling());
@@ -212,6 +216,12 @@ function gameLoop() {
       canvas.width / 2,
       canvas.height / 2 + 60,
     );
+    // ctx.fillText(
+    //   "Dernier score : " + localStorage.getItem("lastScore"),
+    //   canvas.width / 2,
+    //   canvas.height / 2 + 100,
+    // );
+    localStorage.setItem("lastScore", frameCount);
   }
 
   requestAnimationFrame(gameLoop);
