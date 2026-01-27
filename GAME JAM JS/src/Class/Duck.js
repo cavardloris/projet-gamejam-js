@@ -3,7 +3,7 @@ import duckSprite from "../assets/flappyDuck.png";
 
 export class Duck extends GameEntity {
   constructor(x, y) {
-    super(x, y, 34, 24);
+    super(x, y, 60, 47);
 
     this.velocity = 0;
     this.gravity = 0.25;
