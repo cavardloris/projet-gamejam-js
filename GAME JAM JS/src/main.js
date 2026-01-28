@@ -41,6 +41,8 @@ const sky = new Sky(canvas.width, canvas.height);
 let pipes = [];
 let lastJumpTime = 0;
 
+let backgroundX = 0;
+
 const rules = document.getElementById("rules");
 const closeBtn = document.getElementById("close-btn");
 
@@ -172,6 +174,9 @@ function drawStartScreen() {
 function updatePlayingState() {
   manabar.update(duck.isFalling());
   frameCount++;
+
+  backgroundX -= 1;
+  document.body.style.backgroundPosition = `${backgroundX}px 0`;
 
   duck.update();
   duck.draw(ctx);

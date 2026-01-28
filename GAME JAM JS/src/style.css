@@ -8,14 +8,6 @@ body {
     background-size: auto 100%;
 }
 
-@keyframes scrollBackground {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 100% 0;
-    }
-}
 
 
 .mana-bar-container {
