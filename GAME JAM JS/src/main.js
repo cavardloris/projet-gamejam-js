@@ -266,6 +266,7 @@ function datastorage(frameCount) {
 }
 
 function resetGame() {
+  pipes.forEach((pipe) => pipe.destroy());
   duck.y = 200;
   duck.velocity = 0;
   pipes = [];
