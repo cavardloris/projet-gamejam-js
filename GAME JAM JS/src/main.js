@@ -75,7 +75,7 @@ function handleInput(event) {
   }
   if (
     rules.classList.contains("hidden") &&
-    (event.code === "Space" || event.type === "click")
+    (event.code === "Space" || event.type === "click" || event.type === "mousedown")
   ) {
     switch (currentState) {
       case state.start:
@@ -105,6 +105,7 @@ function handleInput(event) {
 window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
 
+//Audio suivant les différents modes du jeu
 function checkaudio() {
   if (currentState === state.playing && audio !== 1) {
     audioManager.playLoop("music", 0.3);
@@ -124,6 +125,7 @@ function checkaudio() {
 }
 
 function gameLoop() {
+  //Nettoyage du canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   checkaudio();
 
