@@ -6,6 +6,8 @@ body {
 
   animation: scrollBackground 20s linear infinite;
   background-size: auto 100%;
+  overflow: hidden;
+  /* Empêche le scroll */
 }
 
 canvas {
