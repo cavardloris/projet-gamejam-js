@@ -1,96 +1,89 @@
 body {
-    background-image: url("assets/background.jpg");
-    margin: 0;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+  background-image: url("assets/background.jpg");
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
 
-    animation: scrollBackground 20s linear infinite;
-    background-size: auto 100%;
+  animation: scrollBackground 20s linear infinite;
+  background-size: auto 100%;
 }
 
-
-
 .mana-bar-container {
-    position: relative;
-    width: 300px;
-    height: 40px;
-    margin: 20px 0;
-    border: 2px solid #666666;
-    border-radius: 5px;
-    overflow: hidden;
-    background-color: #333333;
-    top: 180px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
+  position: relative;
+  width: 300px;
+  height: 40px;
+  margin: 20px 0;
+  border: 2px solid #666666;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #333333;
+  top: 180px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
 }
 
 .mana-bar-fill {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    background-color: #333333;
-    width: 0%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background-color: #333333;
+  width: 0%;
 }
 
 .mana-bar-background {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg,rgba(222, 35, 35, 1) 0%, rgba(208, 212, 91, 1) 50%, rgba(34, 255, 0, 1) 100%);
-    position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(222, 35, 35, 1) 0%,
+    rgba(208, 212, 91, 1) 50%,
+    rgba(34, 255, 0, 1) 100%
+  );
+  position: relative;
 }
 
-
 #ground {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 200%;
-    height: 340px;
-    background-image: url("assets/ground.png");
-    background-repeat: repeat-x;
-    background-size: auto 100%;
-    z-index: 0;
-    animation: scrollGround 5s linear infinite;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 340px;
+  background-image: url("assets/ground.png");
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  z-index: 0;
+  animation: scrollGround 5s linear infinite;
 }
 
 @keyframes scrollGround {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .pipe {
-    position: fixed;
-    top: 0;
-    width: 50px;
-    z-index: 2;
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-
-.pipe-top {
-    background-image: url("assets/toppillar.png");
-}
-
-.pipe-bottom {
-    background-image: url("assets/bottompillar.png");
+  position: fixed;
+  top: 0;
+  width: 50px;
+  z-index: 2;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 
 .pipe-repeat {
-    background-size: 100% auto;
-    background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-repeat: repeat-y;
 }
-
 
 #app {
   position: relative;
   /* Si ton app n'a pas de largeur définie, le centrage peut varier */
-  display: inline-block; 
+  display: inline-block;
 }
 
 .overlay {
@@ -116,7 +109,7 @@ body {
   border-radius: 10px;
   text-align: center;
   max-width: 300px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   font-family: Arial, sans-serif;
 }
 
