@@ -1,4 +1,6 @@
 import { GameEntity } from "./GameEntity.js";
+import Top from "../assets/toppillar.png";
+import Bottom from "../assets/bottompillar.png";
 
 export class Pipe extends GameEntity {
   topPipe;
@@ -9,8 +11,14 @@ export class Pipe extends GameEntity {
   constructor(canvasWidth, canvasHeight, gapY, gapHeight = 150) {
     super(canvasWidth, 0, 35, canvasHeight);
 
-    const hitboxWidth = 10;
+    const hitboxWidth = 50;
     const hitboxPadding = 10;
+
+    this.imageBottom = new Image();
+    this.imageBottom.src = Bottom;
+
+    this.imageTop = new Image();
+    this.imageTop.src = Top;
 
     this.topPipe = new GameEntity(
       canvasWidth + hitboxPadding,
@@ -68,22 +76,44 @@ export class Pipe extends GameEntity {
   }
 
   draw(ctx) {
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 2;
+    if (
+      this.imageTop.complete &&
+      this.imageTop.naturalWidth > 0 &&
+      this.imageBottom.complete &&
+      this.imageBottom.naturalWidth > 0
+    ) {
+      ctx.drawImage(
+        this.imageTop,
+        this.topPipe.x,
+        this.topPipe.y,
+        this.topPipe.width,
+        this.topPipe.height,
+      );
+      ctx.drawImage(
+        this.imageBottom,
+        this.bottomPipe.x,
+        this.bottomPipe.y,
+        this.bottomPipe.width,
+        this.bottomPipe.height,
+      );
 
-    ctx.strokeRect(
-      this.topPipe.x,
-      this.topPipe.y,
-      this.topPipe.width,
-      this.topPipe.height,
-    );
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
 
-    ctx.strokeRect(
-      this.bottomPipe.x,
-      this.bottomPipe.y,
-      this.bottomPipe.width,
-      this.bottomPipe.height,
-    );
+      ctx.strokeRect(
+        this.topPipe.x,
+        this.topPipe.y,
+        this.topPipe.width - 3,
+        this.topPipe.height,
+      );
+
+      ctx.strokeRect(
+        this.bottomPipe.x,
+        this.bottomPipe.y,
+        this.bottomPipe.width - 3,
+        this.bottomPipe.height,
+      );
+    }
   }
 
   isOffScreen() {
