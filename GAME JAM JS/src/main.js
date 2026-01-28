@@ -25,8 +25,23 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 document.querySelector("#app").appendChild(canvas);
 
-canvas.width = 400;
-canvas.height = 600;
+// Hauteur fixe du jeu, la largeur s'adapte pour garder le zoom
+const windowsHeight = 600;
+//clculs du ratio de la fenetre pour adapter la largeur
+const getGameWidth = () => windowsHeight * (window.innerWidth / window.innerHeight);
+
+canvas.height = windowsHeight;
+canvas.width = getGameWidth();
+
+// Gestion du redimensionnement
+window.addEventListener("resize", () => {
+  canvas.height = windowsHeight;
+  canvas.width = getGameWidth();
+
+  if (typeof ground !== "undefined") ground.setwidthheight(canvas.width, canvas.height);
+  if (typeof sky !== "undefined") sky.setwidthheight(canvas.width, canvas.height);
+});
+
 //Différents états de jeu possible
 const state = {
   start: 0,
@@ -73,6 +88,14 @@ function handleInput(event) {
     }
     return;
   }
+
+  //Changement des conditions de disparition des règles : si clic, espace ou entrée alors on enlève les règles
+  if (!rules.classList.contains("hidden")) {
+    if (event.code === "Space" || event.code === "Enter" || event.type === "mousedown" || event.type === "click") {
+      rules.classList.add("hidden");
+    }
+    return;
+  }
   if (
     rules.classList.contains("hidden") &&
     (event.code === "Space" || event.type === "click" || event.type === "mousedown")
@@ -90,7 +113,7 @@ function handleInput(event) {
           if (currentTime - lastJumpTime >= 200) {
             manabar.update(false);
             lastJumpTime = currentTime;
-            audioManager.play("jump", 0.3);
+            audioManager.play("jump", 0.2);
           }
         }
         break;
