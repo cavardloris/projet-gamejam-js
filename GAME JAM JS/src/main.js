@@ -31,7 +31,27 @@ const duck = new Duck(50, 200);
 let pipes = [];
 let lastJumpTime = 0;
 
-// Fonction handlejump qui permet de gérer le saut du canard et la diminution du mana
+let backgroundX = 0;
+
+const rules = document.getElementById("rules");
+const closeBtn = document.getElementById("close-btn");
+const groundDOM = document.getElementById("ground");
+
+// Récupération du nom du joueur
+let playerName = localStorage.getItem("playerName");
+if (!playerName) {
+  playerName = prompt("Entrez votre pseudo :") || "Mets toi un pseudo";
+  localStorage.setItem("playerName", playerName);
+}
+const pseudoDisplay = document.getElementById("player-pseudo");
+if (pseudoDisplay) {
+  pseudoDisplay.textContent = playerName;
+}
+
+closeBtn.addEventListener("click", () => {
+  rules.classList.add("hidden");
+});
+// Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
 function handleJump(event) {
   //Partie pause du jeu avec la touche P et reprise du jeu avec espace ou p
@@ -97,7 +117,11 @@ function gameLoop() {
     // La mise à jour des points pour que ça augmente que quand on joue
     frameCount++;
 
-    // Mise à jour et dessin du canard
+    backgroundX -= 1;
+    document.body.style.backgroundPosition = `${backgroundX}px 0`;
+    groundDOM.classList.add("moving");
+
+
     duck.update();
     duck.draw(ctx);
 
@@ -113,42 +137,49 @@ function gameLoop() {
         Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
       pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
 
-      pipeSpawnDistance = 0; // Réinitialise le compteur de distance
+      pipeSpawnDistance = 0;
     }
     pipes = pipes.filter((pipe) => {
       pipe.update(gameSpeed);
       pipe.draw(ctx);
+
+      if (pipe.doesCollideWith(duck)) {
+        currentState = state.gameOver;
+        groundDOM.classList.remove("moving");
+      }
       return !pipe.isOffScreen();
     });
+
+    if (ground.collideWith(duck) || sky.collidingWith(duck)) {
+      currentState = state.gameOver;
+      groundDOM.classList.remove("moving");
+    }
+
+    // Mise à jour et dessin des tuyaux
+
+    ctx.fillStyle = "red";
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Score : " + frameCount, 10, 30);
   }
 
-  // Mise à jour et dessin des tuyaux
-
-  ctx.fillStyle = "red";
-  ctx.font = "20px Arial";
-  ctx.fillText("Compteur : " + frameCount, 10, 30);
-
-  // manabar.update();
-
-  // Augmentation progressive de la vitesse
-  speedIncreaseTimer++;
-
-  if (speedIncreaseTimer % 600 === 0) {
-    gameSpeed = Math.min(gameSpeed + 0.1, 3);
-    console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
-  }
-
-  if (currentState === state.paused) {
+  function PauseScreen() {
+    groundDOM.classList.remove("moving");
     pipes.forEach((pipe) => pipe.draw(ctx));
     duck.draw(ctx);
     ground.draw(ctx);
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "white";
     ctx.font = "40px Arial";
     ctx.textAlign = "center";
     ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
-  } else if (currentState === state.gameOver) {
+  }
+
+  function GameOverScreen() {
+    groundDOM.classList.remove("moving");
     pipes.forEach((pipe) => pipe.draw(ctx));
     ground.draw(ctx);
     duck.draw(ctx);
@@ -185,6 +216,7 @@ function resetGame() {
   gameSpeed = 1;
   manabar.setValue(100);
   currentState = state.start;
+  groundDOM.classList.remove("moving");
 }
 
 gameLoop();
