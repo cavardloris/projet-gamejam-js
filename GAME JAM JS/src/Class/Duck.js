@@ -37,15 +37,14 @@ export class Duck extends GameEntity {
   }
 
   getBounds() {
-    // Changez ce chiffre pour rendre le canard plus ou moins "maigre"
     const paddingleft = 11;
     const paddingtop = 7;
 
     return {
-      startX: this.x + paddingleft, // Bord gauche rentré
-      startY: this.y + paddingtop, // Bord haut rentré
-      endX: this.x + this.width, // Bord droit rentré
-      endY: this.y + this.height, // Bord bas rentré
+      startX: this.x + paddingleft, //11 px de padding a gauche
+      startY: this.y + paddingtop, // 7 px de padding en haut
+      endX: this.x + this.width,
+      endY: this.y + this.height,
     };
   }
 
