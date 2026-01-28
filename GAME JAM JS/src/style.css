@@ -8,7 +8,11 @@ body {
   background-size: auto 100%;
 }
 
-#ground {
+canvas {
+  height: 100vh;
+}
+
+/* #ground {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -16,7 +20,7 @@ body {
     height: 128px;
     background-repeat: repeat-x;
     background-image: url("assets/ground.png");
-}
+} */
 
 .mana-bar-container {
   position: relative;
@@ -53,7 +57,6 @@ body {
   );
   position: relative;
 }
-
 
 .pipe {
   position: fixed;
