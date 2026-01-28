@@ -14,6 +14,7 @@ audioManager.loadSound("jump", "src/assets/sounds/jump.mp3");
 
 let gameSpeed = 1;
 let frameCount = 0;
+let pipeScore = 0; // Nouveau score basé sur les tuyaux passés
 let speedIncreaseTimer = 0;
 let pipeSpawnDistance = 0; // Distance parcourue depuis le dernier tuyau
 const PIPE_SPAWN_INTERVAL = 240; // Distance fixe entre les tuyaux
@@ -26,7 +27,7 @@ document.querySelector("#app").appendChild(canvas);
 
 canvas.width = 400;
 canvas.height = 600;
-
+//Différents états de jeu possible
 const state = {
   start: 0,
   playing: 1,
@@ -63,7 +64,7 @@ closeBtn.addEventListener("click", () => {
 // Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
 function handleInput(event) {
-  //Partie pause du jeu avec la touche P et reprise du jeu avec espace ou p
+  //Partie pause du jeu avec la touche échap
   if (event.key === "Escape") {
     if (currentState === state.playing) {
       currentState = state.paused;
@@ -205,6 +206,13 @@ function updatePlayingState() {
     pipe.update(gameSpeed);
     pipe.draw(ctx);
 
+    // A chaque tuyaux passés on augmente le score
+    if (!pipe.passed && duck.x > pipe.x + pipe.width) {
+      pipe.passed = true;
+      pipeScore++;
+      console.log("Score:", pipeScore);
+    }
+
     if (pipe.doesCollideWith(duck)) {
       currentState = state.gameOver;
     }
@@ -214,10 +222,13 @@ function updatePlayingState() {
   if (ground.collideWith(duck) || sky.collidingWith(duck)) {
     currentState = state.gameOver;
   }
-  ctx.fillStyle = "red";
-  ctx.font = "20px Arial";
+  ctx.font = "bold 50px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("Score : " + frameCount, 10, 30);
+  ctx.strokeStyle = "#101010";
+  ctx.lineWidth = 4;
+  ctx.strokeText(pipeScore, canvas.width / 2, 80);
+  ctx.fillStyle = "#EE5A29";
+  ctx.fillText(pipeScore, canvas.width / 2, 80);
 }
 
 function PauseScreen() {
@@ -229,9 +240,15 @@ function PauseScreen() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = "white";
-  ctx.font = "40px Arial";
+  ctx.font = "20px Arial";
   ctx.textAlign = "center";
   ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
+  ctx.fillText(
+    "Score actuel : " + pipeScore,
+    canvas.width / 2,
+    canvas.height / 2 +
+    50,
+  );
 }
 
 function GameOverScreen() {
@@ -248,7 +265,7 @@ function GameOverScreen() {
   ctx.fillText("PERDU !", canvas.width / 2, canvas.height / 2 - 20);
 
   ctx.fillText(
-    "Score final : " + frameCount,
+    "Score final : " + pipeScore,
     canvas.width / 2,
     canvas.height / 2 + 20,
   );
@@ -257,16 +274,16 @@ function GameOverScreen() {
     canvas.width / 2,
     canvas.height / 2 + 60,
   );
-  datastorage(frameCount);
+  datastorage(pipeScore);
 }
 
-function datastorage(frameCount) {
-  localStorage.setItem("lastScore", frameCount);
+function datastorage(score) {
+  localStorage.setItem("lastScore", score);
   if (
     localStorage.getItem("bestScore") === null ||
-    frameCount > parseInt(localStorage.getItem("bestScore"))
+    score > parseInt(localStorage.getItem("bestScore"))
   ) {
-    localStorage.setItem("bestScore", frameCount);
+    localStorage.setItem("bestScore", score);
   }
 }
 
@@ -276,6 +293,7 @@ function resetGame() {
   duck.velocity = 0;
   pipes = [];
   frameCount = 0;
+  pipeScore = 0; // Réinitialisation score tuyaux
   gameSpeed = 1;
   manabar.setValue(100);
   currentState = state.start;
