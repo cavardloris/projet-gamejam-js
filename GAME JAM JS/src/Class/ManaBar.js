@@ -42,13 +42,13 @@ export class ManaBar {
   //Fonction update qui s'occupe de la mana bar si elle doit diminuer ou augmenter
   update(isFalling) {
     if (isFalling) {
-      const regenSpeed = 0.4;
+      const regenSpeed = 0.5;
 
       if (this.currentValue < this.maxValue) {
         this.setValue(this.currentValue + regenSpeed);
       }
     } else {
-      const cost = 0.3;
+      const cost = 0.5;
       let newValue = this.currentValue - cost;
 
       if (newValue <= 0) {

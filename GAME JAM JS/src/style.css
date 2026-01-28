@@ -33,7 +33,7 @@ canvas {
   overflow: hidden;
   background-color: #333333;
   top: 1rem;
-  left: 12rem;
+  left: 50%;
   transform: translateX(-50%);
   z-index: 1;
 }
@@ -50,12 +50,10 @@ canvas {
 .mana-bar-background {
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(222, 35, 35, 1) 0%,
-    rgba(208, 212, 91, 1) 50%,
-    rgba(34, 255, 0, 1) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(222, 35, 35, 1) 0%,
+      rgba(208, 212, 91, 1) 50%,
+      rgba(34, 255, 0, 1) 100%);
   position: relative;
 }
 
@@ -85,11 +83,13 @@ canvas {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8); /* Fond noir transparent */
+  background-color: rgba(0, 0, 0, 0.8);
+  /* Fond noir transparent */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Pour être sûr d'être au-dessus du canvas */
+  z-index: 10;
+  /* Pour être sûr d'être au-dessus du canvas */
 }
 
 .overlay.hidden {
