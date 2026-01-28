@@ -3,8 +3,14 @@ import { Ground } from "./Class/Ground.js";
 import { Pipe } from "./Class/Pipe.js";
 import { ManaBar } from "./Class/ManaBar.js";
 import { Duck } from "./Class/Duck.js";
+import { AudioManager } from "./Class/AudioManager.js";
+
+const audioManager = new AudioManager();
+
+audioManager.loadSound('music', 'src/assets/sounds/music_fixed.mp3');
 
 let gameSpeed = 1;
+let gameStarted = false;
 let frameCount = 0;
 let speedIncreaseTimer = 0;
 let pipeSpawnDistance = 0; // Distance parcourue depuis le dernier tuyau
@@ -90,138 +96,161 @@ function handleJump(event) {
         currentState = state.playing;
         break;
     }
-  }
-}
-window.addEventListener("keydown", handleJump);
-window.addEventListener("click", handleJump);
 
-function gameLoop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // Nettoyage du canvas
-  if (currentState === state.start) {
-    ground.draw(ctx); // Affichage du sol
-    duck.draw(ctx); // Affichage canard avant de démarrer
-    // * Rajouter tout les élements une fois push ou les enlever pour vraiment faire une présentation du jeu
-    // Présentation du jeu
-    ctx.fillStyle = "black";
-    ctx.font = "30px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
-    ctx.font = "20px Arial";
-    ctx.fillText(
-      "Appuyez sur Espace pour commencer",
-      canvas.width / 2,
-      canvas.height / 2,
-    );
-  } else if (currentState === state.playing) {
-    manabar.update(duck.isFalling());
-    // La mise à jour des points pour que ça augmente que quand on joue
-    frameCount++;
+    function handleInput(e) {
+      if (!GameOn) return;
 
-    backgroundX -= 1;
-    document.body.style.backgroundPosition = `${backgroundX}px 0`;
-    groundDOM.classList.add("moving");
+      if (e.code === "Space" || e.type === "mousedown") {
+        // Démarrer la musique au premier saut
+        if (!gameStarted) {
+          audioManager.playLoop('music', 0.3);
+          gameStarted = true;
+          console.log("Musique de fond démarrée !");
+        }
 
-
-    duck.update();
-    duck.draw(ctx);
-
-    // Mise à jour et dessin du sol
-    ground.update(gameSpeed);
-    ground.draw(ctx);
-
-    pipeSpawnDistance += 2 * gameSpeed; // 2 est la vitesse de base des tuyaux
-    if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
-      const minGapY = 50;
-      const maxGapY = canvas.height - 200;
-      const randomGapY =
-        Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
-      pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
-
-      pipeSpawnDistance = 0;
+        if (duck.jump) duck.jump();
+      }
     }
-    pipes = pipes.filter((pipe) => {
-      pipe.update(gameSpeed);
-      pipe.draw(ctx);
 
-      if (pipe.doesCollideWith(duck)) {
-        currentState = state.gameOver;
+    window.addEventListener("keydown", handleInput);
+    window.addEventListener("mousedown", handleInput);
+
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Nettoyage du canvas
+      if (currentState === state.start) {
+        ground.draw(ctx); // Affichage du sol
+        duck.draw(ctx); // Affichage canard avant de démarrer
+        // * Rajouter tout les élements une fois push ou les enlever pour vraiment faire une présentation du jeu
+        // Présentation du jeu
+        ctx.fillStyle = "black";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
+        ctx.font = "20px Arial";
+        ctx.fillText(
+          "Appuyez sur Espace pour commencer",
+          canvas.width / 2,
+          canvas.height / 2,
+        );
+      } else if (currentState === state.playing) {
+        manabar.update(duck.isFalling());
+        // La mise à jour des points pour que ça augmente que quand on joue
+        frameCount++;
+
+        backgroundX -= 1;
+        document.body.style.backgroundPosition = `${backgroundX}px 0`;
+        groundDOM.classList.add("moving");
+
+
+        duck.update();
+        duck.draw(ctx);
+
+        // Mise à jour et dessin du sol
+        ground.update(gameSpeed);
+        ground.draw(ctx);
+
+        pipeSpawnDistance += 2 * gameSpeed; // 2 est la vitesse de base des tuyaux
+        if (pipeSpawnDistance >= PIPE_SPAWN_INTERVAL) {
+          const minGapY = 50;
+          const maxGapY = canvas.height - 200;
+          const randomGapY =
+            Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
+          pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
+
+          pipeSpawnDistance = 0;
+        }
+        pipes = pipes.filter((pipe) => {
+          pipe.update(gameSpeed);
+          pipe.draw(ctx);
+
+          if (pipe.doesCollideWith(duck)) {
+            currentState = state.gameOver;
+            groundDOM.classList.remove("moving");
+          }
+          return !pipe.isOffScreen();
+        });
+
+        if (ground.collideWith(duck) || sky.collidingWith(duck)) {
+          currentState = state.gameOver;
+          groundDOM.classList.remove("moving");
+        }
+
+        // Mise à jour et dessin des tuyaux
+
+
+        ctx.fillStyle = "red";
+        ctx.font = "20px Arial";
+        ctx.fillText("Score : " + frameCount, 10, 30);
+
+        // manabar.update();
+
+        // Augmentation progressive de la vitesse
+        speedIncreaseTimer++;
+
+        if (speedIncreaseTimer % 600 === 0) {
+          gameSpeed = Math.min(gameSpeed + 0.1, 3);
+          console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
+        }
+
+        if (currentState === state.paused) {
+          pipes.forEach((pipe) => pipe.draw(ctx));
+          duck.draw(ctx);
+          ground.draw(ctx);
+
+          ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = "white";
+          ctx.font = "40px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
+        }
+
+        function GameOverScreen() {
+          groundDOM.classList.remove("moving");
+          pipes.forEach((pipe) => pipe.draw(ctx));
+          ground.draw(ctx);
+          duck.draw(ctx);
+
+          ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = "white";
+          ctx.textAlign = "center";
+          ctx.font = "40px Arial";
+          ctx.fillText("PERDU !", canvas.width / 2, canvas.height / 2 - 20);
+
+          ctx.font = "20px Arial";
+          ctx.fillText(
+            "Score final : " + frameCount,
+            canvas.width / 2,
+            canvas.height / 2 + 20,
+          );
+          ctx.fillText(
+            "Appuyez pour rejouer",
+            canvas.width / 2,
+            canvas.height / 2 + 60,
+          );
+        }
+
+        requestAnimationFrame(gameLoop);
+      }
+
+      function resetGame() {
+        duck.y = 200;
+        duck.velocity = 0;
+        pipes = [];
+        frameCount = 0;
+        gameSpeed = 1;
+        manabar.setValue(100);
+        currentState = state.start;
         groundDOM.classList.remove("moving");
       }
-      return !pipe.isOffScreen();
-    });
 
-    if (ground.collideWith(duck) || sky.collidingWith(duck)) {
-      currentState = state.gameOver;
-      groundDOM.classList.remove("moving");
-    }
+      gameLoop();
 
-    // Mise à jour et dessin des tuyaux
-
-    ctx.fillStyle = "red";
-    ctx.font = "20px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Score : " + frameCount, 10, 30);
-  }
-
-  function PauseScreen() {
-    groundDOM.classList.remove("moving");
-    pipes.forEach((pipe) => pipe.draw(ctx));
-    duck.draw(ctx);
-    ground.draw(ctx);
-
-    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "white";
-    ctx.font = "40px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
-  }
-
-  function GameOverScreen() {
-    groundDOM.classList.remove("moving");
-    pipes.forEach((pipe) => pipe.draw(ctx));
-    ground.draw(ctx);
-    duck.draw(ctx);
-
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.font = "40px Arial";
-    ctx.fillText("PERDU !", canvas.width / 2, canvas.height / 2 - 20);
-
-    ctx.font = "20px Arial";
-    ctx.fillText(
-      "Score final : " + frameCount,
-      canvas.width / 2,
-      canvas.height / 2 + 20,
-    );
-    ctx.fillText(
-      "Appuyez pour rejouer",
-      canvas.width / 2,
-      canvas.height / 2 + 60,
-    );
-  }
-
-  requestAnimationFrame(gameLoop);
-}
-
-function resetGame() {
-  duck.y = 200;
-  duck.velocity = 0;
-  pipes = [];
-  frameCount = 0;
-  gameSpeed = 1;
-  manabar.setValue(100);
-  currentState = state.start;
-  groundDOM.classList.remove("moving");
-}
-
-gameLoop();
-
-document.addEventListener("a", () => {
-  GameOn = false;
-  console.log("Jeu arrêté au clic !");
-});
+      document.addEventListener("a", () => {
+        GameOn = false;
+        console.log("Jeu arrêté au clic !");
+      });
