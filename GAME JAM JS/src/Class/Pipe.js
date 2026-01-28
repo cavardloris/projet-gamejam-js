@@ -13,17 +13,17 @@ export class Pipe extends GameEntity {
     const hitboxPadding = 10;
 
     this.topPipe = new GameEntity(
-        canvasWidth + hitboxPadding,
-        hitboxPadding,
-        hitboxWidth - (hitboxPadding * 2),
-        gapY - hitboxPadding
+      canvasWidth + hitboxPadding,
+      hitboxPadding,
+      hitboxWidth - hitboxPadding * 2,
+      gapY - hitboxPadding,
     );
 
     this.bottomPipe = new GameEntity(
-        canvasWidth + hitboxPadding,
-        gapHeight + gapY + hitboxPadding,
-        hitboxWidth - (hitboxPadding * 2),
-        canvasHeight - (gapHeight + gapY) - hitboxPadding
+      canvasWidth + hitboxPadding,
+      gapHeight + gapY + hitboxPadding,
+      hitboxWidth - hitboxPadding * 2,
+      canvasHeight - (gapHeight + gapY) - hitboxPadding,
     );
 
     this.gapY = gapY;
@@ -36,12 +36,12 @@ export class Pipe extends GameEntity {
   }
 
   createPipeElements(canvasWidth, canvasHeight) {
-    this.topElement = document.createElement('div');
-    this.topElement.className = 'pipe pipe-top';
+    this.topElement = document.createElement("div");
+    this.topElement.className = "pipe pipe-top";
     document.body.appendChild(this.topElement);
 
-    this.bottomElement = document.createElement('div');
-    this.bottomElement.className = 'pipe pipe-bottom';
+    this.bottomElement = document.createElement("div");
+    this.bottomElement.className = "pipe pipe-bottom";
     document.body.appendChild(this.bottomElement);
 
     this.updatePipePositions();
@@ -49,7 +49,7 @@ export class Pipe extends GameEntity {
 
   updatePipePositions() {
     this.topElement.style.left = `${this.x}px`;
-    this.topElement.style.top = '0px';
+    this.topElement.style.top = "0px";
     this.topElement.style.height = `${this.gapY}px`;
 
     const bottomPipeY = this.gapY + this.gapHeight;
@@ -71,15 +71,26 @@ export class Pipe extends GameEntity {
     ctx.strokeStyle = "red";
     ctx.lineWidth = 2;
 
-    ctx.strokeRect(this.topPipe.x, this.topPipe.y, this.topPipe.width, this.topPipe.height);
+    ctx.strokeRect(
+      this.topPipe.x,
+      this.topPipe.y,
+      this.topPipe.width,
+      this.topPipe.height,
+    );
 
-    ctx.strokeRect(this.bottomPipe.x, this.bottomPipe.y, this.bottomPipe.width, this.bottomPipe.height);
+    ctx.strokeRect(
+      this.bottomPipe.x,
+      this.bottomPipe.y,
+      this.bottomPipe.width,
+      this.bottomPipe.height,
+    );
   }
 
   isOffScreen() {
     const offscreen = this.x + this.width < 0;
     if (offscreen) {
       console.log("Pipe hors écran à x:", this.x);
+      this.destroy();
     }
     return offscreen;
   }
@@ -94,7 +105,7 @@ export class Pipe extends GameEntity {
     }
 
     return (
-        this.topPipe.isColliding(other) || this.bottomPipe.isColliding(other)
+      this.topPipe.isColliding(other) || this.bottomPipe.isColliding(other)
     );
   }
 
