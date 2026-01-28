@@ -55,10 +55,10 @@ body {
     bottom: 0;
     left: 0;
     width: 200%;
-    height: 340px; /* Augmente la hauteur (était 50px) */
+    height: 340px;
     background-image: url("assets/ground.png");
     background-repeat: repeat-x;
-    background-size: auto 100%; /* L'image s'adapte à la nouvelle hauteur */
+    background-size: auto 100%;
     z-index: 0;
     animation: scrollGround 5s linear infinite;
 }
@@ -70,13 +70,6 @@ body {
     100% {
         transform: translateX(-50%);
     }
-}
-
-#gameCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 0;
 }
 
 .pipe {
