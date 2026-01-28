@@ -226,9 +226,9 @@ function updatePlayingState() {
   ctx.textAlign = "center";
   ctx.strokeStyle = "#101010";
   ctx.lineWidth = 4;
-  ctx.strokeText(pipeScore, canvas.width / 2, 80);
+  ctx.strokeText(pipeScore, canvas.width / 2, 120);
   ctx.fillStyle = "#EE5A29";
-  ctx.fillText(pipeScore, canvas.width / 2, 80);
+  ctx.fillText(pipeScore, canvas.width / 2, 120);
 }
 
 function PauseScreen() {
