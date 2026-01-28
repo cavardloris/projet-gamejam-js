@@ -160,12 +160,12 @@ function drawStartScreen() {
     canvas.height / 2,
   );
   ctx.fillText(
-    "Dernier score : " + localStorage.getItem("lastScore"),
+    "Dernier score : " + (localStorage.getItem("lastScore") ?? 0),
     canvas.width / 2,
     canvas.height / 2 + 100,
   );
   ctx.fillText(
-    "Meilleur score : " + localStorage.getItem("bestScore"),
+    "Meilleur score : " + (localStorage.getItem("bestScore") ?? 0),
     canvas.width / 2,
     canvas.height / 2 + 150,
   );
