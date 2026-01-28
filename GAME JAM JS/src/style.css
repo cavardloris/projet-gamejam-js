@@ -8,7 +8,15 @@ body {
     background-size: auto 100%;
 }
 
-
+#ground {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 150%;
+    height: 128px;
+    background-repeat: repeat-x;
+    background-image: url("assets/ground.png");
+}
 
 .mana-bar-container {
     position: relative;
@@ -41,28 +49,6 @@ body {
     position: relative;
 }
 
-
-#ground {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 200%;
-    height: 340px;
-    background-image: url("assets/ground.png");
-    background-repeat: repeat-x;
-    background-size: auto 100%;
-    z-index: 0;
-    animation: scrollGround 5s linear infinite;
-}
-
-@keyframes scrollGround {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
 
 .pipe {
     position: fixed;
