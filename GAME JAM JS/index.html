@@ -11,6 +11,13 @@
 
 <body>
   <div id="app">
+    <div id="ui-layer">
+      <button id="pause-btn" class="hidden">⏸️</button>
+      <div id="start-controls" class="hidden">
+        <button id="btn-gravity-normal">Gravité Normale (0)</button>
+        <button id="btn-gravity-inverted">Gravité Inversée (1)</button>
+      </div>
+    </div>
     <div id="rules" class="overlay">
       <div class="content">
         <h2>Comment jouer ?</h2>
@@ -20,7 +27,10 @@
           2. Évite les tuyaux.<br>
           3. Gère ta barre de Mana.<br>
           4. La touche échap permet de mettre en pause le jeu<br>
-          5. Fais le meilleur score possible !<br><br>
+          5. Le jeu commence en <strong>Gravité Inversée</strong> (tu tombes vers le haut !)<br>
+          6. Appuie sur <strong>0</strong> pour le mode Normal, ou <strong>1</strong> pour le mode Inversé (sur l'écran
+          d'accueil).<br>
+          7. Fais le meilleur score possible !<br><br>
           Bonne chance !
         </p>
         <button id="close-btn">Fermer</button>

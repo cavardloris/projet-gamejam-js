@@ -5,6 +5,8 @@ import { ManaBar } from "./Class/ManaBar.js";
 import { Duck } from "./Class/Duck.js";
 import { AudioManager } from "./Class/AudioManager.js";
 import { Sky } from "./Class/Sky.js";
+import { Ui } from "./Class/Ui.js";
+
 
 //Chargement des sons + creation audiomanager
 const audioManager = new AudioManager();
@@ -52,15 +54,57 @@ const state = {
 
 const ground = new Ground(canvas.width, canvas.height);
 const manabar = new ManaBar();
-const duck = new Duck(50, 200);
+const duck = new Duck(50, 300); // canard à 300 pour être au milieu
 const sky = new Sky(canvas.width, canvas.height);
+const ui = new Ui();
 let pipes = [];
 let lastJumpTime = 0;
 
+// Par défaut en mod einversé
+duck.setGravityMode(true);
+ui.updateGravityButtons(true);
+
 let backgroundX = 0;
 
-const rules = document.getElementById("rules");
-const closeBtn = document.getElementById("close-btn");
+// UI Elements
+const btnGravityNormal = document.getElementById("btn-gravity-normal");
+const btnGravityInverted = document.getElementById("btn-gravity-inverted");
+
+function updateUI() {
+  ui.updateDOM(currentState, state);
+}
+
+
+//pour les controles sur mobiles
+ui.pauseBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  ui.pauseBtn.blur(); // Enlève le focus pour éviter que la barre espace réactive le bouton
+  if (currentState === state.playing) {
+    currentState = state.paused;
+  } else if (currentState === state.paused) {
+    currentState = state.playing;
+  }
+  updateUI();
+});
+ui.pauseBtn.addEventListener("mousedown", (e) => e.stopPropagation());
+
+btnGravityNormal.addEventListener("click", (e) => {
+  e.stopPropagation(); // Empêche le clic de lancer le jeu immédiatement
+  console.log("Mode gravité normale activé (Bouton)");
+  duck.setGravityMode(false);
+  ui.updateGravityButtons(false);
+  duck.y = 300;
+});
+btnGravityNormal.addEventListener("mousedown", (e) => e.stopPropagation());
+
+btnGravityInverted.addEventListener("click", (e) => {
+  e.stopPropagation();
+  console.log("Mode gravité inversée activé (Bouton)");
+  duck.setGravityMode(true);
+  ui.updateGravityButtons(true);
+  duck.y = 300;
+});
+btnGravityInverted.addEventListener("mousedown", (e) => e.stopPropagation());
 
 // Récupération du nom du joueur
 let playerName = localStorage.getItem("playerName");
@@ -68,14 +112,8 @@ if (!playerName) {
   playerName = prompt("Entrez votre pseudo :") || "Mets toi un pseudo";
   localStorage.setItem("playerName", playerName);
 }
-const pseudoDisplay = document.getElementById("player-pseudo");
-if (pseudoDisplay) {
-  pseudoDisplay.textContent = playerName;
-}
+ui.setPlayerName(playerName);
 
-closeBtn.addEventListener("click", () => {
-  rules.classList.add("hidden");
-});
 // Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
 function handleInput(event) {
@@ -86,23 +124,24 @@ function handleInput(event) {
     } else if (currentState === state.paused) {
       currentState = state.playing;
     }
+    updateUI();
     return;
   }
 
-  //Changement des conditions de disparition des règles : si clic, espace ou entrée alors on enlève les règles
-  if (!rules.classList.contains("hidden")) {
+  // Si les règles sont affichées, on les ferme
+  if (ui.isRulesVisible()) {
     if (event.code === "Space" || event.code === "Enter" || event.type === "mousedown" || event.type === "click") {
-      rules.classList.add("hidden");
+      ui.hideRules();
     }
     return;
   }
-  if (
-    rules.classList.contains("hidden") &&
-    (event.code === "Space" || event.type === "click" || event.type === "mousedown")
-  ) {
+
+  // Vérifie les appuis sur les différentes conditions de démarrage
+  if (event.code === "Space" || event.type === "click" || event.type === "mousedown") {
     switch (currentState) {
       case state.start:
         currentState = state.playing;
+        updateUI();
         break;
 
       case state.playing:
@@ -123,8 +162,22 @@ function handleInput(event) {
         break;
     }
   }
-}
 
+  // Gestion ecran d'accueil
+  if (currentState === state.start) {
+    if (event.key === "1") {
+      console.log("Mode gravité inversée activé");
+      duck.setGravityMode(true);
+      ui.updateGravityButtons(true);
+      duck.y = 300;
+    } else if (event.key === "0" || event.key === "2") {
+      console.log("Mode gravité normale activé");
+      duck.setGravityMode(false);
+      ui.updateGravityButtons(false);
+      duck.y = 300;
+    }
+  }
+}
 window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
 
@@ -154,7 +207,8 @@ function gameLoop() {
 
   switch (currentState) {
     case state.start:
-      drawStartScreen();
+      ground.draw(ctx);
+      ui.drawStartScreen(ctx, canvas);
       break;
 
     case state.playing:
@@ -162,40 +216,23 @@ function gameLoop() {
       break;
 
     case state.paused:
-      PauseScreen();
+      pipes.forEach((pipe) => pipe.draw(ctx));
+      ground.draw(ctx);
+      duck.draw(ctx);
+      ui.drawPauseScreen(ctx, canvas, pipeScore, duck.gravity < 0);
       break;
 
     case state.gameOver:
-      GameOverScreen();
+      pipes.forEach((pipe) => pipe.draw(ctx));
+      ground.draw(ctx);
+      duck.draw(ctx);
+      ui.drawGameOverScreen(ctx, canvas, pipeScore);
       break;
   }
 
   requestAnimationFrame(gameLoop);
 }
-function drawStartScreen() {
-  ground.draw(ctx);
-  // duck.draw(ctx);
-  ctx.fillStyle = "green";
-  ctx.font = "30px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
-  ctx.font = "20px Arial";
-  ctx.fillText(
-    "Appuyez sur Espace ou clic pour commencer",
-    canvas.width / 2,
-    canvas.height / 2,
-  );
-  ctx.fillText(
-    "Dernier score : " + (localStorage.getItem("lastScore") ?? 0),
-    canvas.width / 2,
-    canvas.height / 2 + 100,
-  );
-  ctx.fillText(
-    "Meilleur score : " + (localStorage.getItem("bestScore") ?? 0),
-    canvas.width / 2,
-    canvas.height / 2 + 150,
-  );
-}
+
 
 function updatePlayingState() {
   manabar.update(duck.isFalling());
@@ -205,10 +242,8 @@ function updatePlayingState() {
   document.body.style.backgroundPosition = `${backgroundX}px 0`;
 
   duck.update();
-  duck.draw(ctx);
 
   ground.update(gameSpeed);
-  ground.draw(ctx);
 
   speedIncreaseTimer++;
 
@@ -223,7 +258,8 @@ function updatePlayingState() {
     const maxGapY = canvas.height - 200;
     const randomGapY =
       Math.floor(Math.random() * (maxGapY - minGapY)) + minGapY;
-    pipes.push(new Pipe(canvas.width, canvas.height, randomGapY));
+    // On rajoute 50px pour que les tuyaus aient le tps de spawn
+    pipes.push(new Pipe(canvas.width + 50, canvas.height, randomGapY));
 
     pipeSpawnDistance = 0;
   }
@@ -240,67 +276,24 @@ function updatePlayingState() {
 
     if (pipe.doesCollideWith(duck)) {
       currentState = state.gameOver;
+      datastorage(pipeScore);
+      updateUI();
     }
     return !pipe.isOffScreen();
   });
 
+  ground.draw(ctx);
+  duck.draw(ctx);
+
   if (ground.collideWith(duck) || sky.collidingWith(duck)) {
     currentState = state.gameOver;
+    datastorage(pipeScore);
+    updateUI();
   }
-  ctx.font = "bold 50px Arial";
-  ctx.textAlign = "center";
-  ctx.strokeStyle = "#101010";
-  ctx.lineWidth = 4;
-  ctx.strokeText(pipeScore, canvas.width / 2, 120);
-  ctx.fillStyle = "#EE5A29";
-  ctx.fillText(pipeScore, canvas.width / 2, 120);
+  ui.drawScore(ctx, canvas, pipeScore);
 }
 
-function PauseScreen() {
-  pipes.forEach((pipe) => pipe.draw(ctx));
-  duck.draw(ctx);
-  ground.draw(ctx);
 
-  ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "white";
-  ctx.font = "20px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
-  ctx.fillText(
-    "Score actuel : " + pipeScore,
-    canvas.width / 2,
-    canvas.height / 2 +
-    50,
-  );
-}
-
-function GameOverScreen() {
-  pipes.forEach((pipe) => pipe.draw(ctx));
-  ground.draw(ctx);
-  duck.draw(ctx);
-
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "white";
-  ctx.textAlign = "center";
-  ctx.font = "20px Arial";
-  ctx.fillText("PERDU !", canvas.width / 2, canvas.height / 2 - 20);
-
-  ctx.fillText(
-    "Score final : " + pipeScore,
-    canvas.width / 2,
-    canvas.height / 2 + 20,
-  );
-  ctx.fillText(
-    "Appuyez sur espace pour rejouer",
-    canvas.width / 2,
-    canvas.height / 2 + 60,
-  );
-  datastorage(pipeScore);
-}
 
 function datastorage(score) {
   localStorage.setItem("lastScore", score);
@@ -314,14 +307,16 @@ function datastorage(score) {
 
 function resetGame() {
   pipes.forEach((pipe) => pipe.destroy());
-  duck.y = 200;
+  duck.y = 300; // canard à 300 pour être au milieu
   duck.velocity = 0;
   pipes = [];
   frameCount = 0;
   pipeScore = 0; // Réinitialisation score tuyaux
-  gameSpeed = 1;
+  pipeSpawnDistance = 0; // Réinitialisation du délai d'apparition
   manabar.setValue(100);
   currentState = state.start;
+  updateUI();
 }
 
 gameLoop();
+updateUI();
