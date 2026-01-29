@@ -13,6 +13,8 @@ const audioManager = new AudioManager();
 
 audioManager.loadSound("music", "src/assets/sounds/music_fixed.mp3");
 audioManager.loadSound("jump", "src/assets/sounds/jump.mp3");
+audioManager.loadSound("pause", "src/assets/sounds/pause_music.mp3")
+audioManager.loadSound("gameOver", "src/assets/sounds/loose_music.mp3")
 
 let gameSpeed = 1;
 let frameCount = 0;
@@ -184,6 +186,8 @@ window.addEventListener("mousedown", handleInput);
 //Audio suivant les différents modes du jeu
 function checkaudio() {
   if (currentState === state.playing && audio !== 1) {
+    audioManager.stop("pause");
+    audioManager.stop("gameOver");
     audioManager.playLoop("music", 0.3);
     console.log("Musique de fond démarrée !");
     audio = 1;
@@ -191,11 +195,15 @@ function checkaudio() {
 
   if (currentState === state.paused && audio !== 2) {
     audioManager.stop("music");
+    audioManager.stop("gameOver");
+    audioManager.play("pause", 0.3);
     console.log("Musique de fond de jeu stoppée !");
     audio = 2;
   }
   if (currentState === state.gameOver && audio !== 3) {
     audioManager.stop("music");
+    audioManager.stop("pause");
+    audioManager.play("gameOver", 0.3);
     audio = 3;
   }
 }
