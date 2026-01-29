@@ -11,10 +11,20 @@ import { Ui } from "./Class/Ui.js";
 //Chargement des sons + creation audiomanager
 const audioManager = new AudioManager();
 
-audioManager.loadSound("music", "src/assets/sounds/music_fixed.mp3");
-audioManager.loadSound("jump", "src/assets/sounds/jump.mp3");
-audioManager.loadSound("pause", "src/assets/sounds/pause_music.mp3")
-audioManager.loadSound("gameOver", "src/assets/sounds/loose_music.mp3")
+// Préchargement de tous les sons (async)
+async function preloadSounds() {
+  console.log("Préchargement des sons...");
+  await Promise.all([
+    audioManager.loadSound("music", "src/assets/sounds/music_fixed.mp3"),
+    audioManager.loadSound("jump", "src/assets/sounds/jump.mp3"),
+    audioManager.loadSound("pause", "src/assets/sounds/pause_music.mp3"),
+    audioManager.loadSound("gameOver", "src/assets/sounds/loose_music.mp3")
+  ]);
+  console.log("Tous les sons sont préchargés !");
+}
+
+// Lancer le préchargement
+preloadSounds().catch(err => console.error("Erreur préchargement sons:", err));
 
 let gameSpeed = 1;
 let frameCount = 0;
@@ -154,7 +164,7 @@ function handleInput(event) {
           if (currentTime - lastJumpTime >= 200) {
             manabar.update(false);
             lastJumpTime = currentTime;
-            audioManager.play("jump", 0.2);
+            audioManager.play("jump", 0.1);
           }
         }
         break;
@@ -188,23 +198,36 @@ function checkaudio() {
   if (currentState === state.playing && audio !== 1) {
     audioManager.stop("pause");
     audioManager.stop("gameOver");
-    audioManager.playLoop("music", 0.3);
-    console.log("Musique de fond démarrée !");
+    if (!audioManager.isLoopPlaying("music")) {
+      audioManager.playLoop("music", 0.3);
+      console.log("Musique de fond démarrée !");
+    }
     audio = 1;
   }
 
   if (currentState === state.paused && audio !== 2) {
     audioManager.stop("music");
     audioManager.stop("gameOver");
-    audioManager.play("pause", 0.3);
-    console.log("Musique de fond de jeu stoppée !");
+    if (!audioManager.isLoopPlaying("pause")) {
+      audioManager.playLoop("pause", 0.3);
+      console.log("Musique de pause démarrée !");
+    }
     audio = 2;
   }
   if (currentState === state.gameOver && audio !== 3) {
     audioManager.stop("music");
     audioManager.stop("pause");
-    audioManager.play("gameOver", 0.3);
+    if (!audioManager.isLoopPlaying("gameOver")) {
+      audioManager.playLoop("gameOver", 0.3);
+      console.log("Musique game over démarrée !");
+    }
     audio = 3;
+  }
+  if (currentState === state.start && audio !== 0) {
+    audioManager.stop("music");
+    audioManager.stop("pause");
+    audioManager.stop("gameOver");
+    audio = 0;
   }
 }
 
@@ -256,7 +279,7 @@ function updatePlayingState() {
   speedIncreaseTimer++;
 
   if (speedIncreaseTimer % 600 === 0) {
-    gameSpeed = Math.min(gameSpeed + 0.1, 3);
+    gameSpeed = Math.min(gameSpeed + 0.1, 4);
     console.log(`Vitesse augmentée: ${gameSpeed.toFixed(1)}x`);
   }
 
@@ -319,6 +342,7 @@ function resetGame() {
   duck.velocity = 0;
   pipes = [];
   frameCount = 0;
+  gameSpeed = 1; //Reset de la vitesse du jeu
   pipeScore = 0; // Réinitialisation score tuyaux
   pipeSpawnDistance = 0; // Réinitialisation du délai d'apparition
   manabar.setValue(100);
