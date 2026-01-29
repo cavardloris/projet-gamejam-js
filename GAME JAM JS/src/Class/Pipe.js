@@ -96,23 +96,6 @@ export class Pipe extends GameEntity {
         this.bottomPipe.width,
         this.bottomPipe.height,
       );
-
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 2;
-
-      ctx.strokeRect(
-        this.topPipe.x,
-        this.topPipe.y,
-        this.topPipe.width - 3,
-        this.topPipe.height,
-      );
-
-      ctx.strokeRect(
-        this.bottomPipe.x,
-        this.bottomPipe.y,
-        this.bottomPipe.width - 3,
-        this.bottomPipe.height,
-      );
     }
   }
 
