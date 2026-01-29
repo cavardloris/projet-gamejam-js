@@ -33,6 +33,7 @@ git clone https://github.com/cavardloris/projet-gamejam-js.git
 cd GAME\ JAM\ JS
 npm install
 npm run dev
+```
 
 ### Développé par
 - https://github.com/cavardloris
