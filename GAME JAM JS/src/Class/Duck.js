@@ -5,7 +5,7 @@ export class Duck extends GameEntity {
   constructor(x, y) {
     super(x, y, 60, 47);
     this.velocity = 0;
-    this.gravity = 0.25;
+    this.gravity = -0.25; // gravité inversée
     this.jumpStrength = 5.5;
 
     // creation de l'image du canard
@@ -19,12 +19,27 @@ export class Duck extends GameEntity {
   }
 
   jump() {
-    this.velocity = -this.jumpStrength; // le saut
+    this.velocity = this.jumpStrength; // le saut 
   }
 
   draw(ctx) {
     if (this.image.complete && this.image.naturalWidth > 0) {
-      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      // Rotation si gravité inversée
+      if (this.gravity < 0) {
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.scale(1, -1);
+        ctx.drawImage(
+          this.image,
+          -this.width / 2,
+          -this.height / 2,
+          this.width,
+          this.height,
+        );
+        ctx.restore();
+      } else {
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
 
       // // --- DEBUG : AFFICHER LA HITBOX ---
       // ctx.strokeStyle = "red";
@@ -49,10 +64,22 @@ export class Duck extends GameEntity {
   }
 
   isFalling() {
-    if (this.velocity > 0) {
-      return true;
+    // Si la gravité est négative (inversée), on tombe vers le haut (velocité < 0)
+    if (this.gravity < 0) {
+      return this.velocity < 0;
     } else {
-      return false;
+      // Gravité normale, on tombe vers le bas (velocité > 0)
+      return this.velocity > 0;
+    }
+  }
+
+  setGravityMode(isInverted) {
+    if (isInverted) {
+      this.gravity = -0.25;
+      this.jumpStrength = 5.5;
+    } else {
+      this.gravity = 0.25;
+      this.jumpStrength = -5.5;
     }
   }
 }
