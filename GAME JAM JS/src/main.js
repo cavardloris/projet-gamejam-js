@@ -60,10 +60,14 @@ if (pseudoDisplay) {
 closeBtn.addEventListener("click", () => {
   rules.classList.add("hidden");
 });
+
 // Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
+
 function handleInput(event) {
+
   //Partie pause du jeu avec la touche P et reprise du jeu avec espace ou p
+
   if (event.key === "Escape") {
     if (currentState === state.playing) {
       currentState = state.paused;
@@ -82,7 +86,9 @@ function handleInput(event) {
         break;
 
       case state.playing:
+
         //Change la valeur minimale de mana pour sauter (sur 100)
+
         if (manabar.getManaValue() > 10) {
           const currentTime = Date.now();
           duck.jump();
@@ -100,6 +106,9 @@ function handleInput(event) {
     }
   }
 }
+
+/*#audio */
+
 
 window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
@@ -121,6 +130,10 @@ function checkaudio() {
     audio = 3;
   }
 }
+
+
+/*boucle de jeu*/
+
 
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -146,9 +159,12 @@ function gameLoop() {
 
   requestAnimationFrame(gameLoop);
 }
+
+/*Écran d'accueil*/
+
+
 function drawStartScreen() {
   ground.draw(ctx);
-  // duck.draw(ctx);
   ctx.fillStyle = "green";
   ctx.font = "30px Arial";
   ctx.textAlign = "center";
@@ -170,6 +186,7 @@ function drawStartScreen() {
     canvas.height / 2 + 150,
   );
 }
+
 
 function updatePlayingState() {
   manabar.update(duck.isFalling());
@@ -233,6 +250,10 @@ function PauseScreen() {
   ctx.textAlign = "center";
   ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2);
 }
+
+
+/*écran de fin*/
+
 
 function GameOverScreen() {
   pipes.forEach((pipe) => pipe.draw(ctx));
