@@ -28,9 +28,14 @@ Le gameplay a été enrichi avec l’ajout d’une **barre de mana**, introduisa
 - npm
 
 ### Étapes
-
-```bash
+c```bash
 git clone https://github.com/cavardloris/projet-gamejam-js.git
 cd GAME\ JAM\ JS
 npm install
 npm run dev
+
+### Développé par
+- https://github.com/cavardloris
+- https://github.com/CillianBgrPro
+- https://github.com/ADRO4545
+
