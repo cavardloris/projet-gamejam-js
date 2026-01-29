@@ -1,6 +1,6 @@
 # 🦆 Flappy Duck
 
-<img width="1024" height="1536" alt="ChatGPT Image 29 janv  2026 à 11_39_51" src="https://github.com/user-attachments/assets/05aa93bf-ed21-411b-bd3a-eedb0d02d190" />
+<img width="100" height="100" alt="ChatGPT Image 29 janv  2026 à 11_39_51" src="https://github.com/user-attachments/assets/05aa93bf-ed21-411b-bd3a-eedb0d02d190" />
 
 
 
