@@ -37,11 +37,10 @@ export class AudioManager {
 
     play(name, volume = 1) {
         if (this.muted || !this.sounds[name]) return;
-        this.stopAll();
 
-        const sound = this.sounds[name];
+        // Clone le son pour permettre plusieurs lectures simultanées
+        const sound = this.sounds[name].cloneNode();
         sound.volume = volume;
-        sound.currentTime = 0;
         console.log("Lecture du son:", name);
 
         const now = performance.now();
