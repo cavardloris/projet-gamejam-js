@@ -1,5 +1,9 @@
 # 🦆 Flappy Duck
 
+<img width="1024" height="1536" alt="ChatGPT Image 29 janv  2026 à 11_39_51" src="https://github.com/user-attachments/assets/05aa93bf-ed21-411b-bd3a-eedb0d02d190" />
+
+
+
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green)
 ![NPM](https://img.shields.io/badge/npm-required-red)
