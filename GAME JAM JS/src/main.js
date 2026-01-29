@@ -83,7 +83,7 @@ const btnGravityNormal = document.getElementById("btn-gravity-normal");
 const btnGravityInverted = document.getElementById("btn-gravity-inverted");
 
 function updateUI() {
-  ui.updateDOM(currentState, state);
+  ui.updateDOM(currentState, state, manabar);
 }
 
 

@@ -59,4 +59,16 @@ export class ManaBar {
       this.setValue(newValue);
     }
   }
+
+  hide() {
+    if (this.barContainer) {
+      this.barContainer.style.display = "none";
+    }
+  }
+
+  show() {
+    if (this.barContainer) {
+      this.barContainer.style.display = "block";
+    }
+  }
 }

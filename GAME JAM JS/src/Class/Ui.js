@@ -27,22 +27,26 @@ export class Ui {
         }
     }
 
-    updateDOM(currentState, state) {
+    updateDOM(currentState, state, manabar = null) {
         if (currentState === state.start) {
             this.pauseBtn.classList.add("hidden");
             this.startControls.classList.remove("hidden");
+            if (manabar) manabar.hide();
         } else if (currentState === state.playing) {
             this.pauseBtn.classList.remove("hidden");
             this.pauseBtn.textContent = "⏸️";
             this.startControls.classList.add("hidden");
+            if (manabar) manabar.show();
         } else if (currentState === state.paused) {
             this.pauseBtn.classList.remove("hidden");
             this.pauseBtn.textContent = "▶️";
             this.startControls.classList.add("hidden");
+            if (manabar) manabar.show();
         } else {
             // Game Over
             this.pauseBtn.classList.add("hidden");
             this.startControls.classList.add("hidden");
+            if (manabar) manabar.show();
         }
     }
 
@@ -50,27 +54,27 @@ export class Ui {
         ctx.fillStyle = "green";
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 50);
+        ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 150);
         ctx.font = "20px Arial";
         ctx.fillText(
             "Appuyez sur Espace",
             canvas.width / 2,
-            canvas.height / 2 + 10,
+            canvas.height / 2 - 50,
         );
         ctx.fillText(
             " ou clic pour commencer",
             canvas.width / 2,
-            canvas.height / 2 + 50,
+            canvas.height / 2,
         );
         ctx.fillText(
             "Dernier score : " + (localStorage.getItem("lastScore") ?? 0),
             canvas.width / 2,
-            canvas.height / 2 + 100,
+            canvas.height / 2 + 50,
         );
         ctx.fillText(
             "Meilleur score : " + (localStorage.getItem("bestScore") ?? 0),
             canvas.width / 2,
-            canvas.height / 2 + 140,
+            canvas.height / 2 + 100,
         );
     }
 
