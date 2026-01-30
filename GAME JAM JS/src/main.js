@@ -37,6 +37,9 @@ let audio = 0; // 0 pour pas de musique, 1 musique de jeu, 2 musique de pause, 3
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
+// Accessibilité du canvas
+canvas.setAttribute("role", "img");
+canvas.setAttribute("aria-label", "Zone de jeu Flappy Duck - Évitez les obstacles en contrôlant le canard avec la barre d'espace ou la souris");
 document.querySelector("#app").appendChild(canvas);
 
 // Hauteur fixe du jeu, la largeur s'adapte pour garder le zoom
@@ -93,8 +96,10 @@ ui.pauseBtn.addEventListener("click", (e) => {
   ui.pauseBtn.blur(); // Enlève le focus pour éviter que la barre espace réactive le bouton
   if (currentState === state.playing) {
     currentState = state.paused;
+    ui.announce("Jeu en pause");
   } else if (currentState === state.paused) {
     currentState = state.playing;
+    ui.announce("Jeu repris");
   }
   updateUI();
 });
@@ -105,6 +110,7 @@ btnGravityNormal.addEventListener("click", (e) => {
   console.log("Mode gravité normale activé (Bouton)");
   duck.setGravityMode(false);
   ui.updateGravityButtons(false);
+  ui.announce("Gravité normale sélectionnée");
   duck.y = 300;
 });
 btnGravityNormal.addEventListener("mousedown", (e) => e.stopPropagation());
@@ -114,6 +120,7 @@ btnGravityInverted.addEventListener("click", (e) => {
   console.log("Mode gravité inversée activé (Bouton)");
   duck.setGravityMode(true);
   ui.updateGravityButtons(true);
+  ui.announce("Gravité inversée sélectionnée");
   duck.y = 300;
 });
 btnGravityInverted.addEventListener("mousedown", (e) => e.stopPropagation());
@@ -133,8 +140,10 @@ function handleInput(event) {
   if (event.key === "Escape") {
     if (currentState === state.playing) {
       currentState = state.paused;
+      ui.announce("Jeu en pause");
     } else if (currentState === state.paused) {
       currentState = state.playing;
+      ui.announce("Jeu repris");
     }
     updateUI();
     return;
@@ -153,6 +162,7 @@ function handleInput(event) {
     switch (currentState) {
       case state.start:
         currentState = state.playing;
+        ui.announce("Jeu démarré");
         updateUI();
         break;
 
@@ -171,6 +181,7 @@ function handleInput(event) {
 
       case state.gameOver:
         resetGame();
+        ui.announce("Nouvelle partie");
         break;
     }
   }
@@ -181,11 +192,13 @@ function handleInput(event) {
       console.log("Mode gravité inversée activé");
       duck.setGravityMode(true);
       ui.updateGravityButtons(true);
+      ui.announce("Gravité inversée sélectionnée");
       duck.y = 300;
     } else if (event.key === "0" || event.key === "2") {
       console.log("Mode gravité normale activé");
       duck.setGravityMode(false);
       ui.updateGravityButtons(false);
+      ui.announce("Gravité normale sélectionnée");
       duck.y = 300;
     }
   }
@@ -308,6 +321,7 @@ function updatePlayingState() {
     if (pipe.doesCollideWith(duck)) {
       currentState = state.gameOver;
       datastorage(pipeScore);
+      ui.announce(`Perdu ! Score final : ${pipeScore}`);
       updateUI();
     }
     return !pipe.isOffScreen();
@@ -319,6 +333,7 @@ function updatePlayingState() {
   if (ground.collideWith(duck) || sky.collidingWith(duck)) {
     currentState = state.gameOver;
     datastorage(pipeScore);
+    ui.announce(`Perdu ! Score final : ${pipeScore}`);
     updateUI();
   }
   ui.drawScore(ctx, canvas, pipeScore);

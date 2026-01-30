@@ -6,16 +6,20 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="src/style.css" />
-  <title>game-jam-js</title>
+  <title>Flappy Duck</title>
 </head>
 
 <body>
-  <div id="app">
+  <h1 class="visually-hidden">Flappy Duck</h1>
+  <div id="sr-announcements" aria-live="polite" aria-atomic="true" class="visually-hidden"></div>
+  <main id="app" role="main" aria-label="Zone de jeu principale">
     <div id="ui-layer">
-      <button id="pause-btn" class="hidden">⏸️</button>
+      <button id="pause-btn" class="hidden" aria-label="Mettre le jeu en pause">⏸️</button>
       <div id="start-controls" class="hidden">
-        <button id="btn-gravity-normal">Gravité Normale (0)</button>
-        <button id="btn-gravity-inverted">Gravité Inversée (1)</button>
+        <button id="btn-gravity-normal" aria-label="Sélectionner la gravité normale, appuyez sur 0">Gravité Normale
+          (0)</button>
+        <button id="btn-gravity-inverted" aria-label="Sélectionner la gravité inversée, appuyez sur 1">Gravité Inversée
+          (1)</button>
       </div>
     </div>
     <div id="rules" class="overlay">
@@ -33,10 +37,10 @@
           7. Fais le meilleur score possible !<br><br>
           Bonne chance !
         </p>
-        <button id="close-btn">Fermer</button>
+        <button id="close-btn" aria-label="Fermer les règles du jeu">Fermer</button>
       </div>
     </div>
-  </div>
+  </main>
   <div id="ground"></div>
   <script type="module" src="/src/main.js"></script>
 </body>

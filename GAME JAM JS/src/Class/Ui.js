@@ -5,12 +5,18 @@ export class Ui {
         this.rules = document.getElementById("rules");
         this.closeBtn = document.getElementById("close-btn");
         this.pseudoDisplay = document.getElementById("player-pseudo");
+        this.srAnnouncements = document.getElementById("sr-announcements");
+        this.focusTrapCleanup = null;
 
         // Gestion fermeture règles
         if (this.closeBtn && this.rules) {
             this.closeBtn.addEventListener("click", () => {
-                this.rules.classList.add("hidden");
+                this.hideRules();
             });
+        }
+
+        if (this.rules && !this.rules.classList.contains("hidden")) {
+            this.focusTrapCleanup = this.setupFocusTrap(this.rules);
         }
 
         this.btnGravityNormal = document.getElementById("btn-gravity-normal");
@@ -27,6 +33,17 @@ export class Ui {
         }
     }
 
+    //pour le rgaa double a : annonce les message au lecteur d'écran
+    announce(message) {
+        if (this.srAnnouncements) {
+            this.srAnnouncements.textContent = message;
+            // Réinitialiser après un court délai pour permettre plusieurs annonces identiques
+            setTimeout(() => {
+                this.srAnnouncements.textContent = "";
+            }, 1000);
+        }
+    }
+
     updateDOM(currentState, state, manabar = null) {
         if (currentState === state.start) {
             this.pauseBtn.classList.add("hidden");
@@ -35,11 +52,13 @@ export class Ui {
         } else if (currentState === state.playing) {
             this.pauseBtn.classList.remove("hidden");
             this.pauseBtn.textContent = "⏸️";
+            this.pauseBtn.setAttribute("aria-label", "Mettre le jeu en pause");
             this.startControls.classList.add("hidden");
             if (manabar) manabar.show();
         } else if (currentState === state.paused) {
             this.pauseBtn.classList.remove("hidden");
             this.pauseBtn.textContent = "▶️";
+            this.pauseBtn.setAttribute("aria-label", "Reprendre le jeu");
             this.startControls.classList.add("hidden");
             if (manabar) manabar.show();
         } else {
@@ -51,7 +70,8 @@ export class Ui {
     }
 
     drawStartScreen(ctx, canvas) {
-        ctx.fillStyle = "green";
+        // Utilisation d'un vert foncé pour meilleur contraste (ratio > 4.5:1)
+        ctx.fillStyle = "#0f5f0f";
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
         ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 150);
@@ -131,7 +151,14 @@ export class Ui {
     }
 
     hideRules() {
-        if (this.rules) this.rules.classList.add("hidden");
+        if (this.rules) {
+            this.rules.classList.add("hidden");
+            // Nettoyer le focus trap
+            if (this.focusTrapCleanup) {
+                this.focusTrapCleanup();
+                this.focusTrapCleanup = null;
+            }
+        }
     }
 
     isRulesVisible() {
@@ -142,5 +169,47 @@ export class Ui {
         if (this.pseudoDisplay) {
             this.pseudoDisplay.textContent = name;
         }
+    }
+
+    setupFocusTrap(container) {
+        if (!container) return;
+
+        const focusableElements = container.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (focusableElements.length === 0) return;
+
+        const firstFocusable = focusableElements[0];
+        const lastFocusable = focusableElements[focusableElements.length - 1];
+
+        // Focus sur le premier élément
+        firstFocusable.focus();
+
+        // Gestionnaire pour piéger le focus
+        const trapFocus = (e) => {
+            if (e.key !== 'Tab') return;
+
+            if (e.shiftKey) {
+                // Shift + Tab
+                if (document.activeElement === firstFocusable) {
+                    e.preventDefault();
+                    lastFocusable.focus();
+                }
+            } else {
+                // Tab seul
+                if (document.activeElement === lastFocusable) {
+                    e.preventDefault();
+                    firstFocusable.focus();
+                }
+            }
+        };
+
+        container.addEventListener('keydown', trapFocus);
+
+        // Retourner une fonction pour nettoyer
+        return () => {
+            container.removeEventListener('keydown', trapFocus);
+        };
     }
 }
