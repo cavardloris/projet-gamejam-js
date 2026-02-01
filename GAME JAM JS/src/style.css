@@ -21,6 +21,10 @@ body {
   background-size: auto 100%;
   overflow: hidden;
   /* Empêche le scroll */
+  touch-action: none;
+  /* Empêche le zoom et les gestes tactiles par défaut sur iOS */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #ui-layer {
@@ -103,6 +107,8 @@ canvas {
   width: 100%;
   display: block;
   /* Supprime l'espace blanc en bas du canvas */
+  touch-action: none;
+  /* Empêche le zoom et les gestes tactiles par défaut sur iOS */
 }
 
 /* #ground {

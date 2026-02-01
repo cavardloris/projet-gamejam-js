@@ -3,6 +3,7 @@ export class AudioManager {
         this.sounds = {};
         this.loops = {}; // Pour stocker les sons en boucle séparément
         this.muted = false;
+        this.audioUnlocked = false; // Pour iOS: l'audio doit être débloqué après interaction utilisateur
     }
 
     loadSound(name, url) {
@@ -28,6 +29,23 @@ export class AudioManager {
         });
     }
 
+    // Débloque l'audio sur iOS (doit être appelé après interaction utilisateur)
+    unlockAudio() {
+        if (this.audioUnlocked) return;
+
+        console.log("Tentative de déblocage de l'audio (iOS)...");
+
+        // Joue un son silencieux pour débloquer l'audio
+        const silentSound = new Audio();
+        silentSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+        silentSound.play()
+            .then(() => {
+                this.audioUnlocked = true;
+                console.log("Audio débloqué avec succès ✓");
+            })
+            .catch((err) => console.log("Impossible de débloquer l'audio:", err));
+    }
+
     stopAll() {
         for (const sound of Object.values(this.loops)) {
             sound.pause();
@@ -36,7 +54,7 @@ export class AudioManager {
     }
 
     play(name, volume = 1) {
-        if (this.muted || !this.sounds[name]) return;
+        if (this.muted || !this.sounds[name] || !this.audioUnlocked) return;
 
         // Clone le son pour permettre plusieurs lectures simultanées
         const sound = this.sounds[name].cloneNode();
@@ -55,7 +73,7 @@ export class AudioManager {
     }
 
     playLoop(name, volume = 1) {
-        if (this.muted || !this.sounds[name]) return;
+        if (this.muted || !this.sounds[name] || !this.audioUnlocked) return;
         this.stopAll();
 
         const sound = this.sounds[name];

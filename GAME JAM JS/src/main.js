@@ -136,6 +136,9 @@ ui.setPlayerName(playerName);
 // Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
 function handleInput(event) {
+  // Débloque l'audio sur iOS lors de la première interaction
+  audioManager.unlockAudio();
+
   //Partie pause du jeu avec la touche échap
   if (event.key === "Escape") {
     if (currentState === state.playing) {
@@ -151,14 +154,14 @@ function handleInput(event) {
 
   // Si les règles sont affichées, on les ferme
   if (ui.isRulesVisible()) {
-    if (event.code === "Space" || event.code === "Enter" || event.type === "mousedown" || event.type === "click") {
+    if (event.code === "Space" || event.code === "Enter" || event.type === "mousedown" || event.type === "click" || event.type === "touchstart") {
       ui.hideRules();
     }
     return;
   }
 
   // Vérifie les appuis sur les différentes conditions de démarrage
-  if (event.code === "Space" || event.type === "click" || event.type === "mousedown") {
+  if (event.code === "Space" || event.type === "click" || event.type === "mousedown" || event.type === "touchstart") {
     switch (currentState) {
       case state.start:
         currentState = state.playing;
@@ -205,6 +208,23 @@ function handleInput(event) {
 }
 window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
+
+// Support des événements tactiles pour iOS/mobile
+window.addEventListener("touchstart", (e) => {
+  // Empêche le comportement par défaut (scroll, zoom, etc.)
+  e.preventDefault();
+  handleInput(e);
+}, { passive: false });
+
+// Empêche le zoom avec double-tap sur iOS
+let lastTouchEnd = 0;
+document.addEventListener("touchend", (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, { passive: false });
 
 //Audio suivant les différents modes du jeu
 function checkaudio() {

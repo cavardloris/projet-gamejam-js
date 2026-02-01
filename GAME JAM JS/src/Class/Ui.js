@@ -13,6 +13,11 @@ export class Ui {
             this.closeBtn.addEventListener("click", () => {
                 this.hideRules();
             });
+            // Support tactile pour iOS
+            this.closeBtn.addEventListener("touchstart", (e) => {
+                e.preventDefault();
+                this.hideRules();
+            }, { passive: false });
         }
 
         if (this.rules && !this.rules.classList.contains("hidden")) {
