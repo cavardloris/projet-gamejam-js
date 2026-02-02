@@ -104,6 +104,19 @@ ui.pauseBtn.addEventListener("click", (e) => {
   updateUI();
 });
 ui.pauseBtn.addEventListener("mousedown", (e) => e.stopPropagation());
+ui.pauseBtn.addEventListener("touchstart", (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  ui.pauseBtn.blur();
+  if (currentState === state.playing) {
+    currentState = state.paused;
+    ui.announce("Jeu en pause");
+  } else if (currentState === state.paused) {
+    currentState = state.playing;
+    ui.announce("Jeu repris");
+  }
+  updateUI();
+}, { passive: false });
 
 btnGravityNormal.addEventListener("click", (e) => {
   e.stopPropagation(); // Empêche le clic de lancer le jeu immédiatement
@@ -114,6 +127,15 @@ btnGravityNormal.addEventListener("click", (e) => {
   duck.y = 300;
 });
 btnGravityNormal.addEventListener("mousedown", (e) => e.stopPropagation());
+btnGravityNormal.addEventListener("touchstart", (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  console.log("Mode gravité normale activé (Touch)");
+  duck.setGravityMode(false);
+  ui.updateGravityButtons(false);
+  ui.announce("Gravité normale sélectionnée");
+  duck.y = 300;
+}, { passive: false });
 
 btnGravityInverted.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -124,6 +146,15 @@ btnGravityInverted.addEventListener("click", (e) => {
   duck.y = 300;
 });
 btnGravityInverted.addEventListener("mousedown", (e) => e.stopPropagation());
+btnGravityInverted.addEventListener("touchstart", (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  console.log("Mode gravité inversée activé (Touch)");
+  duck.setGravityMode(true);
+  ui.updateGravityButtons(true);
+  ui.announce("Gravité inversée sélectionnée");
+  duck.y = 300;
+}, { passive: false });
 
 // Récupération du nom du joueur
 let playerName = localStorage.getItem("playerName");
@@ -212,6 +243,18 @@ window.addEventListener("mousedown", handleInput);
 // Support des événements tactiles pour iOS/mobile
 window.addEventListener("touchstart", (e) => {
   // Empêche le comportement par défaut (scroll, zoom, etc.)
+  e.preventDefault();
+  handleInput(e);
+}, { passive: false });
+
+// Ajout des événements tactiles directement sur le canvas pour le gameplay
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  handleInput(e);
+}, { passive: false });
+
+// Ajout aussi sur le document pour garantir la capture
+document.addEventListener("touchstart", (e) => {
   e.preventDefault();
   handleInput(e);
 }, { passive: false });
