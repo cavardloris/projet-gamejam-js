@@ -158,7 +158,6 @@ function handleInput(event) {
     return;
   }
 
-  alert(event.code);
   alert(event.type);
 
   // Si les règles sont affichées, on les ferme
