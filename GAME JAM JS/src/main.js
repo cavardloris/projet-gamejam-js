@@ -158,8 +158,6 @@ function handleInput(event) {
     return;
   }
 
-  alert(event.type);
-
   // Si les règles sont affichées, on les ferme
   if (ui.isRulesVisible()) {
     if (
