@@ -7,7 +7,6 @@ import { AudioManager } from "./Class/AudioManager.js";
 import { Sky } from "./Class/Sky.js";
 import { Ui } from "./Class/Ui.js";
 
-
 //Chargement des sons + creation audiomanager
 const audioManager = new AudioManager();
 
@@ -18,13 +17,15 @@ async function preloadSounds() {
     audioManager.loadSound("music", "src/assets/sounds/music_fixed.mp3"),
     audioManager.loadSound("jump", "src/assets/sounds/jump.mp3"),
     audioManager.loadSound("pause", "src/assets/sounds/pause_music.mp3"),
-    audioManager.loadSound("gameOver", "src/assets/sounds/loose_music.mp3")
+    audioManager.loadSound("gameOver", "src/assets/sounds/loose_music.mp3"),
   ]);
   console.log("Tous les sons sont préchargés !");
 }
 
 // Lancer le préchargement
-preloadSounds().catch(err => console.error("Erreur préchargement sons:", err));
+preloadSounds().catch((err) =>
+  console.error("Erreur préchargement sons:", err),
+);
 
 let gameSpeed = 1;
 let frameCount = 0;
@@ -39,13 +40,17 @@ const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 // Accessibilité du canvas
 canvas.setAttribute("role", "img");
-canvas.setAttribute("aria-label", "Zone de jeu Flappy Duck - Évitez les obstacles en contrôlant le canard avec la barre d'espace ou la souris");
+canvas.setAttribute(
+  "aria-label",
+  "Zone de jeu Flappy Duck - Évitez les obstacles en contrôlant le canard avec la barre d'espace ou la souris",
+);
 document.querySelector("#app").appendChild(canvas);
 
 // Hauteur fixe du jeu, la largeur s'adapte pour garder le zoom
 const windowsHeight = 600;
 //clculs du ratio de la fenetre pour adapter la largeur
-const getGameWidth = () => windowsHeight * (window.innerWidth / window.innerHeight);
+const getGameWidth = () =>
+  windowsHeight * (window.innerWidth / window.innerHeight);
 
 canvas.height = windowsHeight;
 canvas.width = getGameWidth();
@@ -55,8 +60,10 @@ window.addEventListener("resize", () => {
   canvas.height = windowsHeight;
   canvas.width = getGameWidth();
 
-  if (typeof ground !== "undefined") ground.setwidthheight(canvas.width, canvas.height);
-  if (typeof sky !== "undefined") sky.setwidthheight(canvas.width, canvas.height);
+  if (typeof ground !== "undefined")
+    ground.setwidthheight(canvas.width, canvas.height);
+  if (typeof sky !== "undefined")
+    sky.setwidthheight(canvas.width, canvas.height);
 });
 
 //Différents états de jeu possible
@@ -89,7 +96,6 @@ function updateUI() {
   ui.updateDOM(currentState, state, manabar);
 }
 
-
 //pour les controles sur mobiles
 ui.pauseBtn.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -104,19 +110,6 @@ ui.pauseBtn.addEventListener("click", (e) => {
   updateUI();
 });
 ui.pauseBtn.addEventListener("mousedown", (e) => e.stopPropagation());
-ui.pauseBtn.addEventListener("touchstart", (e) => {
-  e.stopPropagation();
-  e.preventDefault();
-  ui.pauseBtn.blur();
-  if (currentState === state.playing) {
-    currentState = state.paused;
-    ui.announce("Jeu en pause");
-  } else if (currentState === state.paused) {
-    currentState = state.playing;
-    ui.announce("Jeu repris");
-  }
-  updateUI();
-}, { passive: false });
 
 btnGravityNormal.addEventListener("click", (e) => {
   e.stopPropagation(); // Empêche le clic de lancer le jeu immédiatement
@@ -127,15 +120,6 @@ btnGravityNormal.addEventListener("click", (e) => {
   duck.y = 300;
 });
 btnGravityNormal.addEventListener("mousedown", (e) => e.stopPropagation());
-btnGravityNormal.addEventListener("touchstart", (e) => {
-  e.stopPropagation();
-  e.preventDefault();
-  console.log("Mode gravité normale activé (Touch)");
-  duck.setGravityMode(false);
-  ui.updateGravityButtons(false);
-  ui.announce("Gravité normale sélectionnée");
-  duck.y = 300;
-}, { passive: false });
 
 btnGravityInverted.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -146,15 +130,6 @@ btnGravityInverted.addEventListener("click", (e) => {
   duck.y = 300;
 });
 btnGravityInverted.addEventListener("mousedown", (e) => e.stopPropagation());
-btnGravityInverted.addEventListener("touchstart", (e) => {
-  e.stopPropagation();
-  e.preventDefault();
-  console.log("Mode gravité inversée activé (Touch)");
-  duck.setGravityMode(true);
-  ui.updateGravityButtons(true);
-  ui.announce("Gravité inversée sélectionnée");
-  duck.y = 300;
-}, { passive: false });
 
 // Récupération du nom du joueur
 let playerName = localStorage.getItem("playerName");
@@ -183,16 +158,29 @@ function handleInput(event) {
     return;
   }
 
+  alert(event.code, event.type);
+
   // Si les règles sont affichées, on les ferme
   if (ui.isRulesVisible()) {
-    if (event.code === "Space" || event.code === "Enter" || event.type === "mousedown" || event.type === "click" || event.type === "touchstart") {
+    if (
+      event.code === "Space" ||
+      event.code === "Enter" ||
+      event.type === "mousedown" ||
+      event.type === "click" ||
+      event.type === "touchstart"
+    ) {
       ui.hideRules();
     }
     return;
   }
 
   // Vérifie les appuis sur les différentes conditions de démarrage
-  if (event.code === "Space" || event.type === "click" || event.type === "mousedown" || event.type === "touchstart") {
+  if (
+    event.code === "Space" ||
+    event.type === "click" ||
+    event.type === "mousedown" ||
+    event.type === "touchstart"
+  ) {
     switch (currentState) {
       case state.start:
         currentState = state.playing;
@@ -241,33 +229,29 @@ window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
 
 // Support des événements tactiles pour iOS/mobile
-window.addEventListener("touchstart", (e) => {
-  // Empêche le comportement par défaut (scroll, zoom, etc.)
-  e.preventDefault();
-  handleInput(e);
-}, { passive: false });
-
-// Ajout des événements tactiles directement sur le canvas pour le gameplay
-canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  handleInput(e);
-}, { passive: false });
-
-// Ajout aussi sur le document pour garantir la capture
-document.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  handleInput(e);
-}, { passive: false });
+window.addEventListener(
+  "touchstart",
+  (e) => {
+    // Empêche le comportement par défaut (scroll, zoom, etc.)
+    e.preventDefault();
+    handleInput(e);
+  },
+  { passive: false },
+);
 
 // Empêche le zoom avec double-tap sur iOS
 let lastTouchEnd = 0;
-document.addEventListener("touchend", (e) => {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    e.preventDefault();
-  }
-  lastTouchEnd = now;
-}, { passive: false });
+document.addEventListener(
+  "touchend",
+  (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      e.preventDefault();
+    }
+    lastTouchEnd = now;
+  },
+  { passive: false },
+);
 
 //Audio suivant les différents modes du jeu
 function checkaudio() {
@@ -340,7 +324,6 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-
 function updatePlayingState() {
   manabar.update(duck.isFalling());
   frameCount++;
@@ -401,8 +384,6 @@ function updatePlayingState() {
   }
   ui.drawScore(ctx, canvas, pipeScore);
 }
-
-
 
 function datastorage(score) {
   localStorage.setItem("lastScore", score);
