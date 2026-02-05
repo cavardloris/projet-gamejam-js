@@ -158,7 +158,8 @@ function handleInput(event) {
     return;
   }
 
-  alert(event.code, event.type);
+  alert(event.code);
+  alert(event.type);
 
   // Si les règles sont affichées, on les ferme
   if (ui.isRulesVisible()) {
@@ -227,6 +228,7 @@ function handleInput(event) {
 }
 window.addEventListener("keydown", handleInput);
 window.addEventListener("mousedown", handleInput);
+window.addEventListener("touchstart", handleInput);
 
 // Support des événements tactiles pour iOS/mobile
 window.addEventListener(
