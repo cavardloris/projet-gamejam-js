@@ -40,6 +40,14 @@
         <button id="close-btn" aria-label="Fermer les règles du jeu">Fermer</button>
       </div>
     </div>
+    <div id="name-prompt" class="overlay hidden">
+      <div class="content">
+        <h2>Bienvenue !</h2>
+        <p>Entre ton pseudo pour commencer :</p>
+        <input type="text" id="player-name-input" placeholder="Ton pseudo" maxlength="50" aria-label="Entre ton pseudo">
+        <button id="name-submit-btn" aria-label="Valider le pseudo">Valider</button>
+      </div>
+    </div>
   </main>
   <div id="ground"></div>
   <script type="module" src="/src/main.js"></script>

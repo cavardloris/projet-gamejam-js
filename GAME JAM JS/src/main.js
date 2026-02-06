@@ -88,6 +88,11 @@ ui.updateGravityButtons(true);
 
 let backgroundX = 0;
 
+// Récupération des éléments de la popup de nom (déclarés ici pour être utilisés dans les event listeners)
+const namePromptDiv = document.getElementById("name-prompt");
+const playerNameInput = document.getElementById("player-name-input");
+const nameSubmitBtn = document.getElementById("name-submit-btn");
+
 // UI Elements
 const btnGravityNormal = document.getElementById("btn-gravity-normal");
 const btnGravityInverted = document.getElementById("btn-gravity-inverted");
@@ -99,6 +104,10 @@ function updateUI() {
 //pour les controles sur mobiles
 ui.pauseBtn.addEventListener("click", (e) => {
   e.stopPropagation();
+  // Bloquer si la popup de nom est affichée
+  if (namePromptDiv && !namePromptDiv.classList.contains("hidden")) {
+    return;
+  }
   ui.pauseBtn.blur(); // Enlève le focus pour éviter que la barre espace réactive le bouton
   if (currentState === state.playing) {
     currentState = state.paused;
@@ -113,6 +122,10 @@ ui.pauseBtn.addEventListener("mousedown", (e) => e.stopPropagation());
 
 btnGravityNormal.addEventListener("click", (e) => {
   e.stopPropagation(); // Empêche le clic de lancer le jeu immédiatement
+  // Bloquer si la popup de nom est affichée
+  if (namePromptDiv && !namePromptDiv.classList.contains("hidden")) {
+    return;
+  }
   console.log("Mode gravité normale activé (Bouton)");
   duck.setGravityMode(false);
   ui.updateGravityButtons(false);
@@ -123,6 +136,10 @@ btnGravityNormal.addEventListener("mousedown", (e) => e.stopPropagation());
 
 btnGravityInverted.addEventListener("click", (e) => {
   e.stopPropagation();
+  // Bloquer si la popup de nom est affichée
+  if (namePromptDiv && !namePromptDiv.classList.contains("hidden")) {
+    return;
+  }
   console.log("Mode gravité inversée activé (Bouton)");
   duck.setGravityMode(true);
   ui.updateGravityButtons(true);
@@ -133,15 +150,55 @@ btnGravityInverted.addEventListener("mousedown", (e) => e.stopPropagation());
 
 // Récupération du nom du joueur
 let playerName = localStorage.getItem("playerName");
-if (!playerName) {
-  playerName = prompt("Entrez votre pseudo :") || "Mets toi un pseudo";
-  localStorage.setItem("playerName", playerName);
+
+function showNamePrompt() {
+  namePromptDiv.classList.remove("hidden");
+  playerNameInput.focus();
 }
-ui.setPlayerName(playerName);
+
+function hideNamePrompt() {
+  namePromptDiv.classList.add("hidden");
+}
+
+function saveName() {
+  const name = playerNameInput.value.trim();
+  if (name) {
+    playerName = name;
+    localStorage.setItem("playerName", playerName);
+    ui.setPlayerName(playerName);
+    hideNamePrompt();
+  } else {
+    playerNameInput.value = "";
+    playerNameInput.placeholder = "";
+    playerNameInput.focus();
+  }
+}
+
+// Gestion du clic sur le bouton Valider
+nameSubmitBtn.addEventListener("click", saveName);
+
+// Gestion de la touche Entrée dans l'input
+playerNameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    saveName();
+  }
+});
+
+// Afficher la popup si pas de nom enregistré
+if (!playerName) {
+  showNamePrompt();
+} else {
+  ui.setPlayerName(playerName);
+}
 
 // Fonction handleinput qui permet de gérer le saut du canard et la diminution du mana
 // si on a pas attendu 0,2 sec entre chaque saut alors ça n'enlève pas de mana
 function handleInput(event) {
+  // Bloquer toutes les interactions si la popup de nom est affichée
+  if (namePromptDiv && !namePromptDiv.classList.contains("hidden")) {
+    return; // Ne rien faire tant que le pseudo n'est pas saisi
+  }
+
   // Débloque l'audio sur iOS lors de la première interaction
   audioManager.unlockAudio();
 

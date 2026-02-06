@@ -228,3 +228,20 @@ canvas {
   outline: 3px solid #EE5A29;
   outline-offset: 2px;
 }
+
+.content input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #333;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.content input:focus {
+  outline: 3px solid #EE5A29;
+  outline-offset: 0px;
+  border-color: #EE5A29;
+}

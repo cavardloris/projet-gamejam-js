@@ -77,26 +77,39 @@ export class Ui {
     }
 
     drawStartScreen(ctx, canvas) {
-        // Utilisation d'un vert foncé pour meilleur contraste (ratio > 4.5:1)
+        // Titre du jeu
         ctx.fillStyle = "#0f5f0f";
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
         ctx.fillText("FLAPPY DUCK", canvas.width / 2, canvas.height / 2 - 150);
+
+        // Bouton démarrer pour une meilleure logique de jeu
+        const buttonWidth = 160;
+        const buttonHeight = 50;
+        const buttonX = canvas.width / 2 - buttonWidth / 2;
+        const buttonY = canvas.height / 2 - 35;
+
+        // Fond du bouton
+        ctx.fillStyle = "#EE5A29";
+        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+        // Bordure du bouton
+        ctx.strokeStyle = "#101010";
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+        // Texte du bouton
+        ctx.fillStyle = "#F5EDE6";
+        ctx.font = "bold 22px Arial";
+        ctx.fillText("DÉMARRER", canvas.width / 2, buttonY + 32);
+
+        // Scores
+        ctx.fillStyle = "#0f5f0f";
         ctx.font = "20px Arial";
-        ctx.fillText(
-            "Appuyez sur Espace",
-            canvas.width / 2,
-            canvas.height / 2 - 50,
-        );
-        ctx.fillText(
-            " ou clic pour commencer",
-            canvas.width / 2,
-            canvas.height / 2,
-        );
         ctx.fillText(
             "Dernier score : " + (localStorage.getItem("lastScore") ?? 0),
             canvas.width / 2,
-            canvas.height / 2 + 50,
+            canvas.height / 2 + 60,
         );
         ctx.fillText(
             "Meilleur score : " + (localStorage.getItem("bestScore") ?? 0),
