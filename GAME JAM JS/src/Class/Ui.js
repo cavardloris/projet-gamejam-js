@@ -10,12 +10,14 @@ export class Ui {
 
         // Gestion fermeture règles
         if (this.closeBtn && this.rules) {
-            this.closeBtn.addEventListener("click", () => {
+            this.closeBtn.addEventListener("click", (e) => {
+                e.stopPropagation(); // Empêche la propagation vers window
                 this.hideRules();
             });
             // Support tactile pour iOS
             this.closeBtn.addEventListener("touchstart", (e) => {
                 e.preventDefault();
+                e.stopPropagation(); // Empêche la propagation vers window
                 this.hideRules();
             }, { passive: false });
         }
